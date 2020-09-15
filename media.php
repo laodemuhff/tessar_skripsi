@@ -409,234 +409,149 @@ $(document).ready(function() {
 });
 </script>
 <?php
+	include "config/koneksi.php";
+   if ($_GET['module']=='home'){
+      if ($_SESSION['leveluser']=='manajer'){ 
+         if ($_SESSION['divisi']==1) {
+            // get data penjualan
+            $sql   = "SELECT Sum(detail_penjualan.jumlah) as Tot_Qty, gas.ukuran 
+                      FROM detail_penjualan,gas,penjualan 
+                      WHERE detail_penjualan.id_gas=gas.id_gas 
+                      AND detail_penjualan.kode_penjualan=penjualan.kode_penjualan";
+                      
+            if ($_GET[dari] != '' AND $_GET[sampai] != ''){
+               $sql .= " AND (penjualan.tgl_penjualan BETWEEN '$_GET[dari]' AND '$_GET[sampai]')";     
+            }
+                     
+            if ($_GET[agen] != ''){
+               $sql .=  " AND (penjualan.id_agen = '$_GET[agen]')";    
+            } 
+
+            $sql .= " GROUP BY gas.id_gas ORDER BY gas.id_gas DESC";
+            $query = mysql_query($sql)  or die(mysql_error());
+         }
+         
+         if($_SESSION['divisi']==2){
+            // get data pembelian
+            $sql   =  "SELECT Sum(detail_pembelian.jumlah) as Tot_Qty, gas.ukuran 
+                       FROM detail_pembelian,gas,pembelian 
+                       WHERE detail_pembelian.id_gas=gas.id_gas
+                       AND (detail_pembelian.kode_pembelian=pembelian.kode_pembelian)";
+                       
+                       
+            if ($_GET[dari] != '' AND $_GET[sampai] != ''){
+               $sql .= " AND (pembelian.tgl_pembelian BETWEEN '$_GET[dari]' AND '$_GET[sampai]')";        
+            }
+                     
+            if ($_GET[supplier] != ''){
+               $sql .=  " AND (pembelian.kode_supplier = '$_GET[supplier]')";    
+            }   
+            
+            $sql .= " GROUP BY gas.id_gas ORDER BY gas.id_gas DESC";
+            $query = mysql_query($sql) or die(mysql_error());
+         }
+
+      }
+   }
+
 if ($_GET['module']=='home'){
-if ($_SESSION['leveluser']=='manajer'){
-if ($_SESSION['divisi']==1) {
-if ($_GET[dari] == '' AND $_GET[sampai] == ''){
+   if ($_SESSION['leveluser']=='manajer'){
+      if ($_SESSION['divisi']==1) {
 ?>
-<script src="highcharts.js" type="text/javascript"></script>
-	<script type="text/javascript">
-	var chart1; // globally available
-	$(document).ready(function() {
-      chart1 = new Highcharts.Chart({
-         chart: {
-            renderTo: 'container',
-            type: 'column'
-         },   
-         title: {
-            text: 'Grafik Penjualan gas'
-         },
-         xAxis: {
-            categories: ['nama gas']
-         },
-         yAxis: {
-            title: {
-               text: 'Jumlah'
-            }
-         },
-              series:             
-            [
-            <?php 
-        	include "config/koneksi.php";
-           $sql   = "SELECT Sum(detail_penjualan.jumlah) as Tot_Qty, gas.ukuran FROM detail_penjualan,gas WHERE detail_penjualan.id_gas=gas.id_gas group by gas.id_gas ORDER BY gas.id_gas DESC";
-            $query = mysql_query( $sql )  or die(mysql_error());
-            while( $ret = mysql_fetch_array( $query ) ){
-            	$gas=$ret['ukuran'];                     
-                 $sql_jumlah   = "SELECT Sum(detail_penjualan.jumlah) as Tot_Qty, gas.ukuran FROM detail_penjualan,gas WHERE detail_penjualan.id_gas=gas.id_gas AND gas.ukuran='$gas' group by gas.id_gas ORDER BY gas.id_gas DESC";        
-                 $query_jumlah = mysql_query( $sql_jumlah ) or die(mysql_error());
-                 while( $data = mysql_fetch_array( $query_jumlah ) ){
-                    $jumlah = $data['Tot_Qty'];                 
-                  }             
-                  ?>
-                  {
-                      name: '<?php echo $gas; ?>',
-                      data: [<?php echo $jumlah; ?>]
+         <script src="highcharts.js" type="text/javascript"></script>
+            <script type="text/javascript">
+            var chart1; // globally available
+            $(document).ready(function() {
+               chart1 = new Highcharts.Chart({
+                  chart: {
+                     renderTo: 'container',
+                     type: 'column'
+                  },   
+                  title: {
+                     text: 'Grafik Penjualan gas'
                   },
-                  <?php } ?>
-            ]
-      });
-   });	
-</script>
-
-
-<?php
-}
-if ($_GET[dari] != '' AND $_GET[sampai] != ''){
-?>
-<script src="highcharts.js" type="text/javascript"></script>
-	<script type="text/javascript">
-	var chart1; // globally available
-	$(document).ready(function() {
-      chart1 = new Highcharts.Chart({
-         chart: {
-            renderTo: 'container',
-            type: 'column'
-         },   
-         title: {
-            text: 'Grafik Penjualan gas'
-         },
-         xAxis: {
-            categories: ['nama gas']
-         },
-         yAxis: {
-            title: {
-               text: 'Jumlah'
-            }
-         },
-              series:             
-            [
-            <?php 
-        	include "config/koneksi.php";
-           $sql   = "SELECT Sum(detail_penjualan.jumlah) as Tot_Qty, gas.ukuran FROM detail_penjualan,gas,penjualan 
-																				WHERE (detail_penjualan.id_gas=gas.id_gas)
-																				AND (detail_penjualan.kode_penjualan=penjualan.kode_penjualan)
-																				AND (penjualan.tgl_penjualan BETWEEN '$_GET[dari]' AND '$_GET[sampai]')
-																				group by gas.id_gas ORDER BY gas.id_gas DESC";
-            $query = mysql_query( $sql )  or die(mysql_error());
-            while( $ret = mysql_fetch_array( $query ) ){
-            	$gas=$ret['ukuran'];                     
-                 $sql_jumlah   = "SELECT Sum(detail_penjualan.jumlah) as Tot_Qty, gas.ukuran FROM detail_penjualan,gas,penjualan 
-																							WHERE (detail_penjualan.id_gas=gas.id_gas) 
-																							AND (detail_penjualan.kode_penjualan=penjualan.kode_penjualan)
-																							AND (penjualan.tgl_penjualan BETWEEN '$_GET[dari]' AND '$_GET[sampai]')
-																							AND (gas.ukuran='$gas') 
-																							group by gas.id_gas 
-																							ORDER BY gas.id_gas DESC";        
-                 $query_jumlah = mysql_query( $sql_jumlah ) or die(mysql_error());
-                 while( $data = mysql_fetch_array( $query_jumlah ) ){
-                    $jumlah = $data['Tot_Qty'];                 
-                  }             
-                  ?>
-                  {
-                      name: '<?php echo $gas; ?>',
-                      data: [<?php echo $jumlah; ?>]
+                  xAxis: {
+                     categories: ['nama gas']
                   },
+                  yAxis: {
+                     title: {
+                        text: 'Jumlah'
+                     }
+                  },
+                  series:             
+                  [
+                  <?php 
+                  if(isset($query)){
+                     while($ret = mysql_fetch_array($query)){
+                        $gas=$ret['ukuran'];                     
+                        $jumlah=$ret['Tot_Qty'];            
+                  ?>
+                        // javascript code
+                        {
+                           name: '<?php echo $gas; ?>',
+                           data: [<?php echo $jumlah; ?>]
+                        },
+                     <?php } ?>
                   <?php } ?>
-            ]
-      });
-   });	
-</script>
-
-
+                  ]
+               });
+            });	
+         </script>
 <?php
-}
-}
-}
+      }
+   }
 }
 ?>
+
+
 <?php
 if ($_GET['module']=='home'){
-if ($_SESSION['leveluser']=='manajer'){
-if ($_SESSION['divisi']==2) {
-if ($_GET[dari] == '' AND $_GET[sampai] == ''){
+   if ($_SESSION['leveluser']=='manajer'){
+      if ($_SESSION['divisi']==2) {
 ?>
-<script type="text/javascript">
-	var chart2; // globally available
-	$(document).ready(function() {
-      chart2 = new Highcharts.Chart({
-         chart: {
-            renderTo: 'container2',
-            type: 'column'
-         },   
-         title: {
-            text: 'Grafik Pembelian gas'
-         },
-         xAxis: {
-            categories: ['nama gas']
-         },
-         yAxis: {
-            title: {
-               text: 'Jumlah'
-            }
-         },
-              series:             
-            [
-            <?php 
-        	include "config/koneksi.php";
-           $sql   = "SELECT Sum(detail_pembelian.jumlah) as Tot_Qty, gas.ukuran FROM detail_pembelian,gas WHERE detail_pembelian.id_gas=gas.id_gas group by gas.id_gas ORDER BY gas.id_gas DESC";
-            $query = mysql_query( $sql )  or die(mysql_error());
-            while( $ret = mysql_fetch_array( $query ) ){
-            	$gas=$ret['ukuran'];                     
-                 $sql_jumlah   = "SELECT Sum(detail_pembelian.jumlah) as Tot_Qty, gas.ukuran FROM detail_pembelian,gas WHERE detail_pembelian.id_gas=gas.id_gas AND gas.ukuran='$gas' group by gas.id_gas ORDER BY gas.id_gas DESC";        
-                 $query_jumlah = mysql_query( $sql_jumlah ) or die(mysql_error());
-                 while( $data = mysql_fetch_array( $query_jumlah ) ){
-                    $jumlah = $data['Tot_Qty'];                 
-                  }             
-                  ?>
-                  {
-                      name: '<?php echo $gas; ?>',
-                      data: [<?php echo $jumlah; ?>]
-                  },
+      <script type="text/javascript">
+         var chart2; // globally available
+         $(document).ready(function() {
+            chart2 = new Highcharts.Chart({
+               chart: {
+                  renderTo: 'container2',
+                  type: 'column'
+               },   
+               title: {
+                  text: 'Grafik Pembelian gas'
+               },
+               xAxis: {
+                  categories: ['nama gas']
+               },
+               yAxis: {
+                  title: {
+                     text: 'Jumlah'
+                  }
+               },
+               series:             
+               [
+               <?php 
+               if(isset($query)){
+                  while($ret = mysql_fetch_array($query)){
+                     $gas=$ret['ukuran']; 
+                     $jumlah=$ret['Tot_Qty'];                               
+               ?>
+                     {
+                        name: '<?php echo $gas; ?>',
+                        data: [<?php echo $jumlah ?>]
+                     },
                   <?php } ?>
-            ]
-      });
-   });	
-</script>
-
-
+               <?php } ?>
+               ]
+            });
+         });	
+      </script>
 <?php
-}
-if ($_GET[dari] != '' AND $_GET[sampai] != ''){
-?>
-<script type="text/javascript">
-	var chart2; // globally available
-	$(document).ready(function() {
-      chart2 = new Highcharts.Chart({
-         chart: {
-            renderTo: 'container2',
-            type: 'column'
-         },   
-         title: {
-            text: 'Grafik Pembelian gas'
-         },
-         xAxis: {
-            categories: ['nama gas']
-         },
-         yAxis: {
-            title: {
-               text: 'Jumlah'
-            }
-         },
-              series:             
-            [
-            <?php 
-        	include "config/koneksi.php";
-           $sql   = "SELECT Sum(detail_pembelian.jumlah) as Tot_Qty, gas.ukuran FROM detail_pembelian,gas,pembelian 
-																				WHERE (detail_pembelian.id_gas=gas.id_gas) 
-																				AND (detail_pembelian.kode_pembelian=pembelian.kode_pembelian)
-																				AND (pembelian.tgl_pembelian BETWEEN '$_GET[dari]' AND '$_GET[sampai]')
-																				group by gas.id_gas ORDER BY gas.id_gas DESC";
-            $query = mysql_query( $sql )  or die(mysql_error());
-            while( $ret = mysql_fetch_array( $query ) ){
-            	$gas=$ret['ukuran'];                     
-                 $sql_jumlah   = "SELECT Sum(detail_pembelian.jumlah) as Tot_Qty, gas.ukuran FROM detail_pembelian,gas,pembelian 
-																							WHERE (detail_pembelian.id_gas=gas.id_gas) 
-																							AND (detail_pembelian.kode_pembelian=pembelian.kode_pembelian)
-																							AND (pembelian.tgl_pembelian BETWEEN '$_GET[dari]' AND '$_GET[sampai]')
-																							AND (gas.ukuran='$gas') 
-																							group by gas.id_gas ORDER BY gas.id_gas DESC";        
-                 $query_jumlah = mysql_query( $sql_jumlah ) or die(mysql_error());
-                 while( $data = mysql_fetch_array( $query_jumlah ) ){
-                    $jumlah = $data['Tot_Qty'];                 
-                  }             
-                  ?>
-                  {
-                      name: '<?php echo $gas; ?>',
-                      data: [<?php echo $jumlah; ?>]
-                  },
-                  <?php } ?>
-            ]
-      });
-   });	
-</script>
-
-
-<?php
-}
-}
-}
+      }  
+   }
 }
 ?>
+
 <script src="highcharts.js" type="text/javascript"></script>
 <script type="text/javascript">
 	var chart3; // globally available
