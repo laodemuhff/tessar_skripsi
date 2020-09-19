@@ -30,7 +30,7 @@
 		if ($_SESSION['leveluser']=='admin'){
 			echo"
 				<div class='alert alert-info' role='alert'>
-					<h4 class='alert-heading'>Selamat Datang di Sistem Monitoring Transaksi Pelayanan Operasional</h4>
+					<h4 class='alert-heading'>Selamat Datang di Sistem Monitoring Transaksi Pelayanan Operasional & Keuangan</h4>
 					<b>Nama</b>: $r[nama_lengkap]		
 					<br/>
 					<b>Level User: </b>: ADMIN
@@ -117,7 +117,7 @@
 			}else{
 				echo"
 					<div class='alert alert-info' role='alert'>
-						<h4 class='alert-heading'>Selamat Datang di Sistem Monitoring Transaksi Pelayanan Operasional</h4>
+						<h4 class='alert-heading'>Selamat Datang di Sistem Monitoring Transaksi Pelayanan Keuangan</h4>
 						<b>Nama</b>: $r[nama_lengkap]		
 						<br/>
 						<b>Level User: </b>: PETUGAS DIVISI KEUANGAN
@@ -294,7 +294,7 @@
 			}else{
 				echo"
 					<div class='alert alert-info' role='alert'>
-						<h4 class='alert-heading'>Selamat Datang di Sistem Monitoring Transaksi Pelayanan Operasional</h4>
+						<h4 class='alert-heading'>Selamat Datang di Sistem Monitoring Transaksi Pelayanan Keuangan</h4>
 						<b>Nama</b>: $r[nama_lengkap]	
 						<br />
 						<b>Level User: </b>: MANAJER DIVISI KEUANGAN

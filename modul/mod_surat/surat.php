@@ -41,6 +41,7 @@ switch($_GET[act]){
 												<th>Tanggal</th>
 												<th>Biaya</th>
 												<th>Petugas</th>
+												<th>Status</th>
 												<th>Aksi</th>
 											</tr>
 										</thead>										
@@ -60,12 +61,18 @@ switch($_GET[act]){
 												<td>$tanggal</td>
 												<td>Rp. $biayarp</td>
 												<td>$r[nama_lengkap]</td>
+												<td>";
+													if($r['status'] == 'pending')
+														echo "<span class='badge badge-warning' style='padding:10px; font-size:0.9em;'>$r[status]</span>";
+													else
+														echo "<span class='badge badge-success' style='padding:10px; font-size:0.9em;'>$r[status]</span>";
+												echo "</td>
 												<td>
 													<a href='?module=surat&act=editsurat&id=$r[id_surat]' class='btn btn-primary btn-sm' title='Edit' ><i class='fa fa-edit'></i> Edit</a>
-													<a href='?module=surat&act=detailsurat&id=$r[id_surat]' class='btn btn-success btn-sm' title='Edit' ><i class='fa fa-folder'></i> Detail</a>
-													<a href='?module=surat&act=uploadsurat&id=$r[id_surat]' class='btn btn-info btn-sm' title='Edit' ><i class='fa fa-Upload'></i> Upload Surat</a>
-													<a href='$aksi?module=surat&act=hapus&id=$r[id_surat]' class='btn btn-danger btn-sm' title='Hapus' onClick=\"return confirm('Apakah Anda Yakin Untuk Menghapus Data Ini ?')\"><i class='fa fa-trash'></i> Hapus</a>
-												
+													<a href='?module=surat&act=detailsurat&id=$r[id_surat]' class='btn btn-success btn-sm' title='Edit' ><i class='fa fa-folder'></i> Detail</a>";
+													if($r['status'] == 'pending')
+														echo "<a href='?module=surat&act=uploadsurat&id=$r[id_surat]' class='btn btn-info btn-sm' title='Edit' ><i class='fa fa-Upload'></i> Upload Surat</a>";
+													echo "<a href='$aksi?module=surat&act=hapus&id=$r[id_surat]' class='btn btn-danger btn-sm' title='Hapus' onClick=\"return confirm('Apakah Anda Yakin Untuk Menghapus Data Ini ?')\"><i class='fa fa-trash'></i> Hapus</a>
 												</td>
 											</tr>";
 										$no++;
@@ -221,11 +228,11 @@ case "datasurat":
 								<input type=hidden name='id_surat' value='$_GET[kode]'>
 								  <div class='form-group'>
 									<label for='exampleInputPassword1'>Cari Agen</label>
-										<select class='form-control select2' name='agen' required>
-											<option value='' selected>- Pilih Agen -</option>";
+										<select class='form-control' name='agen_surat[]' id='agen_surat' multiple required>
+											<option value='' disabled>- Pilih Agen -</option>";
 											$tampil=mysql_query("SELECT * FROM Agen ORDER BY nama_agen ASC");
 											while($r=mysql_fetch_array($tampil)){
-											echo "<option value=$r[id_agen]>$r[nama_agen]</option>";
+												echo "<option value=$r[id_agen]>$r[nama_agen]</option>";
 											}
 									echo "</select>
 								  </div>
@@ -475,7 +482,7 @@ case "uploadsurat":
 								<input type=hidden name=id value='$r[id_surat]'>
 								  <div class='form-group'>
 									<label for='exampleInputEmail1'>Upload Surat Jalan</label>
-									<input type='file' name='fupload' id='exampleInputFile'>
+									<input type='file' name='fupload' id='exampleInputFile' accept='.xls,.xlsx,.docs,.docx,.pdf,.txt' required>
 								  </div>
 								   
 								  <button type='submit' class='btn btn-primary'>Simpan</button> 

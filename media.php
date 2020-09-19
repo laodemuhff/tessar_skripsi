@@ -152,7 +152,7 @@ session_start();
 								<li><a href="media.php?module=supir">Supir</a></li>
 								<li><a href="media.php?module=supplier">Supplier</a></li>
 								<li><a href="media.php?module=gas">Gas</a></li>
-								
+                        <li><a href="media.php?module=surat">Surat Jalan</a></li>
 							</ul>
                     </li>
 					<li class="submenu">
@@ -183,7 +183,6 @@ session_start();
 								<li><a href="media.php?module=supir">Supir</a></li>
 								<li><a href="media.php?module=supplier">Supplier</a></li>
 								<li><a href="media.php?module=gas">Gas</a></li>
-								<li><a href="media.php?module=surat">Surat Jalan</a></li>
 							</ul>
                     </li>
 					<li class="submenu">
@@ -406,6 +405,10 @@ elseif ($_GET['module']=='laporan'){
 <script>								
 $(document).ready(function() {
     $('.select2').select2();
+
+    $('#agen_surat').select2({
+         placeholder: 'Silahkan Pilih'
+   });
 });
 </script>
 <?php
