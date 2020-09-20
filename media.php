@@ -1,9 +1,9 @@
 <?php
-session_start();
+   session_start();
 	include "config/koneksi.php";
    include "config/library.php";
    include "config/fungsi_indotgl.php";
-   include "config/fungsi_rupiah.php";
+   include "config/fungsi_rupiah.php";            
  ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,7 +26,7 @@ session_start();
 		
 		<!-- Custom CSS -->
 		<link href="assets/css/style.css" rel="stylesheet" type="text/css" />
-		<link type="text/css" rel="stylesheet" media="all" href="css/chat.css" />
+		<!-- <link type="text/css" rel="stylesheet" media="all" href="css/chat.css" /> -->
 		<!-- BEGIN CSS for this page -->
 		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css"/>
 		<link href="assets/plugins/jquery.filer/css/jquery.filer.css" rel="stylesheet" />
@@ -361,7 +361,7 @@ elseif ($_GET['module']=='laporan'){
 
 <script src="assets/js/modernizr.min.js"></script>
 <script src="assets/js/jquery.min.js"></script>
-<script type="text/javascript" src="js/chat.js"></script>	
+<!-- <script type="text/javascript" src="js/chat.js"></script>	 -->
 <script src="assets/js/moment.min.js"></script>
 	
 <script src="assets/js/popper.min.js"></script>
@@ -399,7 +399,7 @@ elseif ($_GET['module']=='laporan'){
 	<!-- BEGIN Java Script for this page -->
 <script src="assets/plugins/jquery.filer/js/jquery.filer.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js"></script>
- 
+<script src="https://code.highcharts.com/highcharts.js"></script> 
 <!-- END Java Script for this page -->
 <script src="assets/plugins/select2/js/select2.min.js"></script>
 <script>								
@@ -407,6 +407,10 @@ $(document).ready(function() {
     $('.select2').select2();
 
     $('#agen_surat').select2({
+         placeholder: 'Silahkan Pilih'
+   });
+
+   $('#multi_supplier').select2({
          placeholder: 'Silahkan Pilih'
    });
 });
@@ -435,23 +439,66 @@ $(document).ready(function() {
          }
          
          if($_SESSION['divisi']==2){
-            // get data pembelian
-            $sql   =  "SELECT Sum(detail_pembelian.jumlah) as Tot_Qty, gas.ukuran 
-                       FROM detail_pembelian,gas,pembelian 
-                       WHERE detail_pembelian.id_gas=gas.id_gas
-                       AND (detail_pembelian.kode_pembelian=pembelian.kode_pembelian)";
-                       
-                       
+            $sql   =  "SELECT sum(detail_pembelian.jumlah) as jumlah, detail_pembelian.harga_beli as harga, gas.ukuran as ukuran_gas, supplier.nama_supplier as supplier, pembelian.tgl_pembelian as tgl_pembelian
+            FROM detail_pembelian,gas, supplier, pembelian 
+            WHERE detail_pembelian.id_gas=gas.id_gas
+            AND (detail_pembelian.kode_pembelian=pembelian.kode_pembelian)
+            AND (pembelian.kode_supplier = supplier.kode_supplier)";
+
             if ($_GET[dari] != '' AND $_GET[sampai] != ''){
                $sql .= " AND (pembelian.tgl_pembelian BETWEEN '$_GET[dari]' AND '$_GET[sampai]')";        
             }
-                     
-            if ($_GET[supplier] != ''){
-               $sql .=  " AND (pembelian.kode_supplier = '$_GET[supplier]')";    
+
+            if ($_GET[gas] != ''){
+               $sql .=  " AND (detail_pembelian.id_gas = '$_GET[gas]')";    
             }   
             
-            $sql .= " GROUP BY gas.id_gas ORDER BY gas.id_gas DESC";
+            if(!isset($_GET[bandingkan])){
+               
+               if(isset($_GET[multi_supplier][0])){
+                  $supplier_pertama = $_GET[multi_supplier][0];
+                  if($supplier_pertama != 'all'){
+                     $sql .= "AND supplier.kode_supplier IN(";
+                     foreach($_GET[multi_supplier] as $key => $value){
+                        $sql .= "'$value',";
+                     }
+                     $sql = rtrim($sql, ', ');
+                     $sql .= ")";
+                  }
+               }
+
+            }else{
+
+               if(isset($_GET[multi_supplier][0])){
+                  $supplier_pertama = $_GET[multi_supplier][0];
+                  if($supplier_pertama == 'all'){
+                     $query_multi_series = []; 
+                     $query_supplier2 = mysql_query("SELECT * FROM supplier");
+                     $count = 0;
+                     while($row = mysql_fetch_assoc($query_supplier2)){
+                        $kode = $row['kode_supplier'];
+                        $query_multi_series[$count]['name'] = $row['nama_supplier'];
+                        $query_multi_series[$count]['query'] = mysql_query($sql." AND supplier.kode_supplier = '$kode' GROUP BY tgl_pembelian ORDER BY tgl_pembelian") or die(mysql_error());
+                        $count++;
+                     }
+                  }else{
+                     $query_multi_series = []; 
+                     foreach($_GET[multi_supplier] as $key => $value){
+                        $query_supplier2 = mysql_query("SELECT * FROM supplier WHERE kode_supplier = '$value' ");
+                        while($row = mysql_fetch_assoc($query_supplier2)){
+                           $query_multi_series[$key]['name'] = $row['nama_supplier'];
+                        }
+                        $query_multi_series[$key]['query'] = mysql_query($sql." AND supplier.kode_supplier = '$value' GROUP BY tgl_pembelian ORDER BY tgl_pembelian") or die(mysql_error());
+                     }
+                  }
+               }
+            }
+
+            // print_r($sql);exit;
+            $sql .= 'GROUP BY tgl_pembelian ORDER BY tgl_pembelian';
+            
             $query = mysql_query($sql) or die(mysql_error());
+
          }
 
       }
@@ -461,45 +508,7 @@ if ($_GET['module']=='home'){
    if ($_SESSION['leveluser']=='manajer'){
       if ($_SESSION['divisi']==1) {
 ?>
-         <script src="highcharts.js" type="text/javascript"></script>
-            <script type="text/javascript">
-            var chart1; // globally available
-            $(document).ready(function() {
-               chart1 = new Highcharts.Chart({
-                  chart: {
-                     renderTo: 'container',
-                     type: 'column'
-                  },   
-                  title: {
-                     text: 'Grafik Penjualan gas'
-                  },
-                  xAxis: {
-                     categories: ['nama gas']
-                  },
-                  yAxis: {
-                     title: {
-                        text: 'Jumlah'
-                     }
-                  },
-                  series:             
-                  [
-                  <?php 
-                  if(isset($query)){
-                     while($ret = mysql_fetch_array($query)){
-                        $gas=$ret['ukuran'];                     
-                        $jumlah=$ret['Tot_Qty'];            
-                  ?>
-                        // javascript code
-                        {
-                           name: '<?php echo $gas; ?>',
-                           data: [<?php echo $jumlah; ?>]
-                        },
-                     <?php } ?>
-                  <?php } ?>
-                  ]
-               });
-            });	
-         </script>
+        
 <?php
       }
    }
@@ -511,110 +520,265 @@ if ($_GET['module']=='home'){
 if ($_GET['module']=='home'){
    if ($_SESSION['leveluser']=='manajer'){
       if ($_SESSION['divisi']==2) {
+         if(isset($query_multi_series) && !empty($query_multi_series)){
 ?>
-      <script type="text/javascript">
-         var chart2; // globally available
-         $(document).ready(function() {
-            chart2 = new Highcharts.Chart({
-               chart: {
-                  renderTo: 'container2',
-                  type: 'column'
-               },   
-               title: {
-                  text: 'Grafik Pembelian gas'
-               },
-               xAxis: {
-                  categories: ['nama gas']
-               },
-               yAxis: {
-                  title: {
-                     text: 'Jumlah'
-                  }
-               },
-               series:             
-               [
-               <?php 
-               if(isset($query)){
-                  while($ret = mysql_fetch_array($query)){
-                     $gas=$ret['ukuran']; 
-                     $jumlah=$ret['Tot_Qty'];                               
-               ?>
-                     {
-                        name: '<?php echo $gas; ?>',
-                        data: [<?php echo $jumlah ?>]
+            <script type="text/javascript">
+               // globally available
+               $(function() {
+                  new Highcharts.chart('container2', {
+
+                     chart: {
+                        zoomType: 'x'
+                     },   
+
+                     title: {
+                        <?php
+                           $supplier = 'Semua Supplier';
+                           if(isset($_GET[multi_supplier][0])){
+                              if($_GET[multi_supplier][0] == 'all'){
+                                 $supplier = 'Semua Supplier';
+                              }else{
+                                 if(sizeof($_GET[multi_supplier]) == 1){
+                                    $supplier_pertama = $_GET[multi_supplier][0];
+                                    $query_supplier = mysql_query("SELECT * FROM supplier WHERE kode_supplier =  '$supplier_pertama '");
+                                    while($row = mysql_fetch_assoc($query_supplier)){
+                                       $supplier = $row['nama_supplier'];
+                                    }
+                                 }else{
+                                    $supplier = '[';
+                                    foreach($_GET[multi_supplier] as $key => $value){
+                                       $kode = $value;
+                                       $query_supplier = mysql_query("SELECT * FROM supplier WHERE kode_supplier =  '$kode'");
+                                       while($row = mysql_fetch_assoc($query_supplier)){
+                                          $supplier .= $row['nama_supplier'].',';
+                                       }
+                                    }
+                                    $supplier = rtrim($supplier, ', ');
+                                    $supplier .= ']';
+                                 }
+                              }
+                           } 
+                        ?>
+
+                        text: 'Grafik Perbandingan Pembelian Gas dari <?php echo $supplier; ?>'
                      },
-                  <?php } ?>
-               <?php } ?>
-               ]
-            });
-         });	
-      </script>
-<?php
+
+                     subtitle: {
+                        text: document.ontouchstart === undefined ? 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+                     },
+
+                     xAxis: {
+                           type: 'datetime',
+                     },
+                     
+                     yAxis: {
+                        title: {
+                           text: 'Jumlah pembelian gas'
+                        }
+                     },
+
+                     legend: {
+                        layout: 'vertical',
+                        align: 'right',
+                        verticalAlign: 'middle'
+                     },
+
+                     plotOptions: {
+                        area: {
+                           fillColor: {
+                              linearGradient: {
+                                 x1: 0,
+                                 y1: 0,
+                                 x2: 0,
+                                 y2: 1
+                              },
+
+                              stops: [
+                                 [0, Highcharts.getOptions().colors[0]],
+                                 [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                              ]
+                           },
+
+                           marker: {
+                              radius: 2
+                           },
+
+                           lineWidth: 1,
+                           states: {
+                              hover: {
+                                 lineWidth: 1
+                              }
+                           },
+
+                           threshold: null
+                        }
+                     },
+
+                     series: [
+
+                        <?php
+                           foreach($query_multi_series as $key => $value){
+                        ?>
+                              {
+                                 name: "<?php echo $value['name'] ?>",
+                                 data: [
+                                    <?php
+                                    while($row2 = mysql_fetch_array($value['query'])){
+                                       $tgl_pembelian = (int) strtotime($row2['tgl_pembelian']. '+7hours').'000';
+                                    ?>
+                                       [
+                                          <?php echo $tgl_pembelian ?>,
+                                          <?php echo $row2['jumlah'] ?>
+                                       ],
+                                    <?php
+                                    }
+                                    ?>
+                                 ] 
+                              },
+
+                        <?php
+                           }
+                        ?>
+                     
+                     ],
+
+                     responsive: {
+                        rules: [{
+                           condition: {
+                                 maxWidth: 500
+                           },
+                           chartOptions: {
+                                 legend: {
+                                    layout: 'horizontal',
+                                    align: 'center',
+                                    verticalAlign: 'bottom'
+                                 }
+                           }
+                        }]
+                     }
+
+                  }); 
+               });
+            </script>
+
+            <?php    
+            
+            }else{ 
+            
+            ?>
+            <script type="text/javascript">
+                  // globally available
+                  $(function() {
+
+                     new Highcharts.Chart({
+                        chart: {
+                           renderTo: 'container2',
+                           type: 'column',
+                           zoomType: 'x'
+                        },   
+                        title: {
+                           <?php
+                              $supplier = 'Semua Supplier';
+                              if(isset($_GET[multi_supplier][0])){
+                                 if($_GET[multi_supplier][0] == 'all'){
+                                    $supplier = 'Semua Supplier';
+                                 }else{
+                                    if(sizeof($_GET[multi_supplier]) == 1){
+                                       $supplier_pertama = $_GET[multi_supplier][0];
+                                       $query_supplier = mysql_query("SELECT * FROM supplier WHERE kode_supplier =  '$supplier_pertama '");
+                                       while($row = mysql_fetch_assoc($query_supplier)){
+                                          $supplier = $row['nama_supplier'];
+                                       }
+                                    }else{
+                                       $supplier = '[';
+                                       foreach($_GET[multi_supplier] as $key => $value){
+                                          $kode = $value;
+                                          $query_supplier = mysql_query("SELECT * FROM supplier WHERE kode_supplier =  '$kode'");
+                                          while($row = mysql_fetch_assoc($query_supplier)){
+                                             $supplier .= $row['nama_supplier'].',';
+                                          }
+                                       }
+                                       $supplier = rtrim($supplier, ', ');
+                                       $supplier .= ']';
+                                    }
+                                 }
+                              } 
+                           ?>
+
+                           text: 'Grafik Total Pembelian Gas dari <?php echo $supplier; ?>'
+                        },
+                        subtitle: {
+                           text: document.ontouchstart === undefined ? 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+                        },
+                        xAxis: {
+                           type: 'datetime',
+                        },
+                        yAxis: {
+                           title: {
+                              text: 'Jumlah pembelian gas'
+                           }
+                        },
+                        legend: {
+                           enabled: false
+                        },
+                        plotOptions: {
+                           area: {
+                              fillColor: {
+                                 linearGradient: {
+                                    x1: 0,
+                                    y1: 0,
+                                    x2: 0,
+                                    y2: 1
+                                 },
+
+                                 stops: [
+                                    [0, Highcharts.getOptions().colors[0]],
+                                    [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                                 ]
+                              },
+
+                              marker: {
+                                 radius: 2
+                              },
+
+                              lineWidth: 1,
+                              states: {
+                                 hover: {
+                                    lineWidth: 1
+                                 }
+                              },
+
+                              threshold: null
+                           }
+                        },
+
+                        series:[
+                           {
+                              type: 'area',
+                              name: 'jumlah pembelian gas',
+                              data: [
+                                 <?php
+                                    while($row = mysql_fetch_array($query)){
+                                       $tgl_pembelian = (int) strtotime($row['tgl_pembelian']. '+7hours').'000';
+                                 ?>
+                                    [
+                                       <?php echo $tgl_pembelian ?>,
+                                       <?php echo $row['jumlah'] ?>
+                                    ],
+                                 <?php
+                                    }
+                                 ?>
+                              ]
+                           }
+                        ]
+                     });
+                  });	
+               </script>
+<?php  
+         }
       }  
    }
 }
 ?>
-
-<script src="highcharts.js" type="text/javascript"></script>
-<script type="text/javascript">
-	var chart3; // globally available
-	$(document).ready(function() {
-      chart3 = new Highcharts.Chart({
-         chart: {
-            renderTo: 'container3',
-            type: 'column'
-         },   
-         title: {
-            text: 'Grafik Penjualan'
-         },
-         xAxis: {
-            categories: ['Tanggal']
-         },
-         yAxis: {
-            title: {
-               text: 'Jumlah'
-            }
-         },
-              series:             
-            [
-            <?php 
-        	include "config/koneksi.php";
-           $sql   = "SELECT SUM(detail_penjualan.jumlah) AS stok, DATE_FORMAT(penjualan.tgl_penjualan,'%Y/%m') AS tahun_bulan , gas.ukuran, gas.id_gas,penjualan.kode_penjualan,penjualan.tgl_penjualan 
-																											FROM detail_penjualan 
-																											JOIN penjualan ON penjualan.kode_penjualan=detail_penjualan.kode_penjualan
-																											JOIN gas ON gas.id_gas=detail_penjualan.id_gas
-																											WHERE gas.id_gas='$_GET[gas]'
-																											AND penjualan.id_agen='$_GET[id]'
-																											AND month(penjualan.tgl_penjualan)='$_GET[bulan]' 
-																											AND year(penjualan.tgl_penjualan) = '$_GET[tahun]'
-																											GROUP BY penjualan.tgl_penjualan ASC";
-            $query = mysql_query( $sql )  or die(mysql_error());
-            while( $ret = mysql_fetch_array( $query ) ){
-            	$gas=$ret['tgl_penjualan'];                     
-                 $sql_jumlah   = "SELECT SUM(detail_penjualan.jumlah) AS stok, DATE_FORMAT(penjualan.tgl_penjualan,'%Y/%m') AS tahun_bulan , gas.ukuran, gas.id_gas,penjualan.kode_penjualan,penjualan.tgl_penjualan 
-																											FROM detail_penjualan 
-																											JOIN penjualan ON penjualan.kode_penjualan=detail_penjualan.kode_penjualan
-																											JOIN gas ON gas.id_gas=detail_penjualan.id_gas
-																											WHERE gas.id_gas='$_GET[gas]'
-																											AND penjualan.id_agen='$_GET[id]'
-																											AND month(penjualan.tgl_penjualan)='$_GET[bulan]' 
-																											AND year(penjualan.tgl_penjualan) = '$_GET[tahun]'
-																											AND penjualan.tgl_penjualan='$gas'
-																											GROUP BY penjualan.tgl_penjualan ASC
-				 ";        
-                 $query_jumlah = mysql_query( $sql_jumlah ) or die(mysql_error());
-                 while( $data = mysql_fetch_array( $query_jumlah ) ){
-                    $jumlah = $data['stok'];                 
-                  }             
-                  ?>
-                  {
-                      name: '<?php echo $gas; ?>',
-                      data: [<?php echo $jumlah; ?>]
-                  },
-                  <?php } ?>
-            ]
-      });
-   });	
-</script>
 </body>
 </html>
