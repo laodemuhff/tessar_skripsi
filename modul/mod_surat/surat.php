@@ -67,13 +67,17 @@ switch($_GET[act]){
 													else
 														echo "<span class='badge badge-success' style='padding:10px; font-size:0.9em;'>$r[status]</span>";
 												echo "</td>
-												<td>
-													<a href='?module=surat&act=editsurat&id=$r[id_surat]' class='btn btn-primary btn-sm' title='Edit' ><i class='fa fa-edit'></i> Edit</a>
-													<a href='?module=surat&act=detailsurat&id=$r[id_surat]' class='btn btn-success btn-sm' title='Edit' ><i class='fa fa-folder'></i> Detail</a>";
-													if($r['status'] == 'pending')
-														echo "<a href='?module=surat&act=uploadsurat&id=$r[id_surat]' class='btn btn-info btn-sm' title='Edit' ><i class='fa fa-Upload'></i> Upload Surat</a>";
-													echo "<a href='$aksi?module=surat&act=hapus&id=$r[id_surat]' class='btn btn-danger btn-sm' title='Hapus' onClick=\"return confirm('Apakah Anda Yakin Untuk Menghapus Data Ini ?')\"><i class='fa fa-trash'></i> Hapus</a>
-												</td>
+												<td>";
+												if($_SESSION['leveluser'] == 'manajer'){
+													echo "<a href='?module=surat&act=detailsurat&id=$r[id_surat]' class='btn btn-success btn-sm' title='Edit' ><i class='fa fa-folder'></i> Detail</a>";
+												}else{
+													echo "<a href='?module=surat&act=editsurat&id=$r[id_surat]' class='btn btn-primary btn-sm' title='Edit' ><i class='fa fa-edit'></i> Edit</a>
+													<a href='?module=surat&act=detailsurat&id=$r[id_surat]' class='btn btn-success btn-sm' title='Edit' ><i class='fa fa-folder'></i> Detail</a>
+													<a href='?module=surat&act=uploadsurat&id=$r[id_surat]' class='btn btn-info btn-sm' title='Edit' ><i class='fa fa-Upload'></i> Upload Surat</a>
+													<a href='$aksi?module=surat&act=hapus&id=$r[id_surat]' class='btn btn-danger btn-sm' title='Hapus' onClick=\"return confirm('Apakah Anda Yakin Untuk Menghapus Data Ini ?')\"><i class='fa fa-trash'></i> Hapus</a>";
+												}
+												
+												echo "</td>
 											</tr>";
 										$no++;
 										}

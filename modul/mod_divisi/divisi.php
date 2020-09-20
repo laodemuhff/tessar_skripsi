@@ -83,27 +83,24 @@ switch($_GET[act]){
   case "tambahdivisi":
    echo"
 	<div class='row'>
-			
-                    <div class='col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6'>						
-						<div class='card mb-3'>
-							<div class='card-header'>
-								<h3><i class='fa fa-check-square-o'></i> Form Tambah Divisi</h3>
-								
+			<div class='col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6'>						
+				<div class='card mb-3'>
+					<div class='card-header'>
+						<h3><i class='fa fa-check-square-o'></i> Form Tambah Divisi</h3>
+						
+					</div>
+					<div class='card-body'>
+						<form method=POST action='$aksi?module=divisi&act=input'>
+							<div class='form-group'>
+							<label for='exampleInputEmail1'>Nama Divisi</label>
+							<input type='text' name='nama_divisi' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' placeholder='Masukkan Nama divisi' required>
 							</div>
-								
-							<div class='card-body'>
-								
-								<form method=POST action='$aksi?module=divisi&act=input'>
-								  <div class='form-group'>
-									<label for='exampleInputEmail1'>Nama Divisi</label>
-									<input type='text' name='nama_divisi' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' placeholder='Masukkan Nama divisi' required>
-								  </div>
-								  <button type='submit' class='btn btn-primary'>Simpan</button>
-								</form>
-																
-							</div>														
-						</div><!-- end card-->					
-                    </div>
+							<button type='submit' class='btn btn-primary'>Simpan</button>
+						</form>
+														
+					</div>														
+				</div><!-- end card-->					
+			</div>
 		</div>";
 	break;
 

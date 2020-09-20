@@ -43,12 +43,16 @@ switch($_GET[act]){
 												<th>Nama Agen</th>
 												<th>Alamat</th>
 												<th>No. Telp</th>
-												<th>Kuota Per Bulan</th>
-												<th>Aksi</th>
-											</tr>
+												<th>Kuota Bulan ini</th>
+												<th>Terjual Bulan Ini</th>
+												<th>Persentase Terjual</th>";
+												if ($_SESSION['leveluser']=='admin'){
+													echo "<th>Aksi</th>";
+												}
+											echo "</tr>
 										</thead>										
 										<tbody>";
-										$tampil=mysql_query("SELECT * FROM agen ORDER BY id_agen DESC");
+										$tampil=mysql_query("SELECT * FROM agen ORDER BY id_agen");
 										$no=1;
 										while ($r=mysql_fetch_array($tampil)){
 										echo"
@@ -57,13 +61,33 @@ switch($_GET[act]){
 												<td>$r[nama_agen]</td>
 												<td>$r[alamat]</td>
 												<td>$r[no_telp]</td>
-												<td>$r[kuota]</td>
-												<td>";
-												if ($_SESSION['leveluser']=='manajer'){
-												echo"
-												<a href='?module=agen&act=grafik&id=$r[id_agen]' class='btn btn-info btn-sm' title='Edit' ><i class='fa fa-edit'></i> Grafik</a>
-												";
+												<td>$r[kuota]</td>";
+
+												$this_month = intval(date('m'));
+												$this_year = date('Y');
+											
+												$sql_terjual = "SELECT sum(detail_penjualan.jumlah) as jumlah FROM penjualan
+																	JOIN detail_penjualan ON penjualan.kode_penjualan = detail_penjualan.kode_penjualan
+																	JOIN agen ON agen.id_agen = penjualan.id_agen
+																	WHERE agen.id_agen = $r[id_agen]	
+																	AND MONTH(penjualan.tgl_penjualan) = $this_month
+																	AND YEAR(penjualan.tgl_penjualan) = $this_year
+																	";	
+											
+												$terjual_bulan_ini = 0;
+												$persentase_terjual = 0;
+											
+												$query_terjual = mysql_query($sql_terjual) or die(mysql_error());
+											
+												while($row = mysql_fetch_array($query_terjual)){
+													$terjual_bulan_ini = $row['jumlah'] == null ?  0 : $row['jumlah'] ;
+													$persentase_terjual = ($terjual_bulan_ini / $r['kuota']) * 100;
 												}
+													
+												echo "
+												<td>$terjual_bulan_ini</td>
+												<td>$persentase_terjual %</td>	
+												<td>";
 												if ($_SESSION['leveluser']=='admin'){
 												echo"
 													<a href='?module=agen&act=editagen&id=$r[id_agen]' class='btn btn-primary btn-sm' title='Edit' ><i class='fa fa-edit'></i> Edit</a>

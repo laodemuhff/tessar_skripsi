@@ -3,7 +3,7 @@
 	include "config/koneksi.php";
    include "config/library.php";
    include "config/fungsi_indotgl.php";
-   include "config/fungsi_rupiah.php";            
+   include "config/fungsi_rupiah.php";
  ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -142,10 +142,10 @@
 						<a href="media.php?module=home"><i class="fa fa-fw fa-bars"></i><span> Dashboard </span> </a>
                     </li>
 					<li class="submenu">
-						<a href="media.php?module=manajer"><i class="fa fa-fw fa-user"></i><span> Profil Petugas </span> </a>
+						<a href="media.php?module=petugas"><i class="fa fa-fw fa-user"></i><span> Profil Petugas </span> </a>
                     </li>
 					<li class="submenu">
-                        <a href="#"><i class="fa fa-fw fa-tv"></i> <span> Master Data </span> <span class="menu-arrow"></span></a>
+                     <a href="#"><i class="fa fa-fw fa-tv"></i> <span> Master Data </span> <span class="menu-arrow"></span></a>
 							<ul class="list-unstyled">
 								<li><a href="media.php?module=divisi">Divisi</a></li>
 								<li><a href="media.php?module=agen">Agen</a></li>
@@ -154,7 +154,7 @@
 								<li><a href="media.php?module=gas">Gas</a></li>
                         <li><a href="media.php?module=surat">Surat Jalan</a></li>
 							</ul>
-                    </li>
+               </li>
 					<li class="submenu">
                         <a href="#"><i class="fa fa-fw fa-laptop"></i> <span> Master Transaksi </span> <span class="menu-arrow"></span></a>
 							<ul class="list-unstyled">
@@ -209,7 +209,18 @@
                     </li>
 					<li class="submenu">
 						<a href="media.php?module=manajer"><i class="fa fa-fw fa-user"></i><span> Profil User </span> </a>
-                    </li>
+               </li>
+               <li class="submenu">
+                     <a href="#"><i class="fa fa-fw fa-tv"></i> <span> Master Data </span> <span class="menu-arrow"></span></a>
+							<ul class="list-unstyled">
+								<li><a href="media.php?module=divisi">Divisi</a></li>
+								<li><a href="media.php?module=agen">Agen</a></li>
+								<li><a href="media.php?module=supir">Supir</a></li>
+								<li><a href="media.php?module=supplier">Supplier</a></li>
+								<li><a href="media.php?module=gas">Gas</a></li>
+                        <li><a href="media.php?module=surat">Surat Jalan</a></li>
+							</ul>
+               </li>
 					<li class="submenu">
 						<a href="media.php?module=agen"><i class="fa fa-fw fa-laptop"></i><span> Data Agen </span> </a>
                     </li>
@@ -230,7 +241,17 @@
 					<li class="submenu">
 						<a href="media.php?module=manajer"><i class="fa fa-fw fa-user"></i><span> Profil User </span> </a>
                     </li>
-					
+                    <li class="submenu">
+                     <a href="#"><i class="fa fa-fw fa-tv"></i> <span> Master Data </span> <span class="menu-arrow"></span></a>
+							<ul class="list-unstyled">
+								<li><a href="media.php?module=divisi">Divisi</a></li>
+								<li><a href="media.php?module=agen">Agen</a></li>
+								<li><a href="media.php?module=supir">Supir</a></li>
+								<li><a href="media.php?module=supplier">Supplier</a></li>
+								<li><a href="media.php?module=gas">Gas</a></li>
+                        <li><a href="media.php?module=surat">Surat Jalan</a></li>
+							</ul>
+               </li>
 					<li class="submenu">
                         <a href="media.php?module=laporan"><i class="fa fa-fw fa-copy"></i><span> Laporan </span> </a>
                     </li>
@@ -266,7 +287,7 @@ if ($_GET['module']=='home'){
 
 // Bagian divisi
 elseif ($_GET['module']=='divisi'){
-  if ($_SESSION['leveluser']=='admin' OR $_SESSION['leveluser']=='petugas'){
+  if ($_SESSION['leveluser']=='admin' OR $_SESSION['leveluser']=='petugas' OR $_SESSION['leveluser'] == 'manajer'){
     include "modul/mod_divisi/divisi.php";
   }
 }
@@ -279,13 +300,13 @@ elseif ($_GET['module']=='agen'){
 }
 // Bagian gas
 elseif ($_GET['module']=='gas'){
-  if ($_SESSION['leveluser']=='admin' OR $_SESSION['leveluser']=='petugas'){
+  if ($_SESSION['leveluser']=='admin' OR $_SESSION['leveluser']=='petugas' OR $_SESSION['leveluser'] == 'manajer'){
     include "modul/mod_gas/gas.php";
   }
 }
 // Bagian supplier
 elseif ($_GET['module']=='supplier'){
-  if ($_SESSION['leveluser']=='admin' OR $_SESSION['leveluser']=='petugas'){
+  if ($_SESSION['leveluser']=='admin' OR $_SESSION['leveluser']=='petugas' OR $_SESSION['leveluser'] == 'manajer'){
     include "modul/mod_supplier/supplier.php";
   }
 }
@@ -297,13 +318,13 @@ elseif ($_GET['module']=='admin'){
 }
 // Bagian supir
 elseif ($_GET['module']=='supir'){
-  if ($_SESSION['leveluser']=='admin' OR $_SESSION['leveluser']=='petugas'){
+  if ($_SESSION['leveluser']=='admin' OR $_SESSION['leveluser']=='petugas' OR $_SESSION['leveluser'] == 'manajer'){
     include "modul/mod_supir/supir.php";
   }
 }
 // Bagian surat
 elseif ($_GET['module']=='surat'){
-  if ($_SESSION['leveluser']=='admin' OR $_SESSION['leveluser']=='petugas'){
+  if ($_SESSION['leveluser']=='admin' OR $_SESSION['leveluser']=='petugas' OR $_SESSION['leveluser'] == 'manajer'){
     include "modul/mod_surat/surat.php";
   }
 }
@@ -421,21 +442,65 @@ $(document).ready(function() {
       if ($_SESSION['leveluser']=='manajer'){ 
          if ($_SESSION['divisi']==1) {
             // get data penjualan
-            $sql   = "SELECT Sum(detail_penjualan.jumlah) as Tot_Qty, gas.ukuran 
-                      FROM detail_penjualan,gas,penjualan 
-                      WHERE detail_penjualan.id_gas=gas.id_gas 
-                      AND detail_penjualan.kode_penjualan=penjualan.kode_penjualan";
-                      
-            if ($_GET[dari] != '' AND $_GET[sampai] != ''){
-               $sql .= " AND (penjualan.tgl_penjualan BETWEEN '$_GET[dari]' AND '$_GET[sampai]')";     
-            }
-                     
-            if ($_GET[agen] != ''){
-               $sql .=  " AND (penjualan.id_agen = '$_GET[agen]')";    
-            } 
+            $sql   =  "SELECT sum(detail_penjualan.jumlah) as jumlah, detail_penjualan.harga_jual as harga, gas.ukuran as ukuran_gas, agen.nama_agen as agen, penjualan.tgl_penjualan as tgl_penjualan
+            FROM detail_penjualan,gas, agen, penjualan 
+            WHERE detail_penjualan.id_gas=gas.id_gas
+            AND (detail_penjualan.kode_penjualan=penjualan.kode_penjualan)
+            AND (penjualan.id_agen = agen.id_agen)";
 
-            $sql .= " GROUP BY gas.id_gas ORDER BY gas.id_gas DESC";
-            $query = mysql_query($sql)  or die(mysql_error());
+            if ($_GET[dari] != '' AND $_GET[sampai] != ''){
+               $sql .= " AND (penjualan.tgl_penjualan BETWEEN '$_GET[dari]' AND '$_GET[sampai]')";        
+            }
+
+            if ($_GET[gas] != ''){
+               $sql .=  " AND (detail_penjualan.id_gas = '$_GET[gas]')";    
+            }   
+            
+            if(!isset($_GET[bandingkan])){
+               
+               if(isset($_GET[multi_agen][0])){
+                  $agen_pertama = $_GET[multi_agen][0];
+                  if($agen_pertama != 'all'){
+                     $sql .= "AND agen.id_agen IN(";
+                     foreach($_GET[multi_agen] as $key => $value){
+                        $sql .= "'$value',";
+                     }
+                     $sql = rtrim($sql, ', ');
+                     $sql .= ")";
+                  }
+               }
+
+            }else{
+
+               if(isset($_GET[multi_agen][0])){
+                  $agen_pertama = $_GET[multi_agen][0];
+                  if($agen_pertama == 'all'){
+                     $query_multi_series = []; 
+                     $query_agen2 = mysql_query("SELECT * FROM agen");
+                     $count = 0;
+                     while($row = mysql_fetch_assoc($query_agen2)){
+                        $kode = $row['id_agen'];
+                        $query_multi_series[$count]['name'] = $row['nama_agen'];
+                        $query_multi_series[$count]['query'] = mysql_query($sql." AND agen.id_agen = '$kode' GROUP BY tgl_penjualan ORDER BY tgl_penjualan") or die(mysql_error());
+                        $count++;
+                     }
+                  }else{
+                     $query_multi_series = []; 
+                     foreach($_GET[multi_agen] as $key => $value){
+                        $query_agen2 = mysql_query("SELECT * FROM agen WHERE id_agen = '$value' ");
+                        while($row = mysql_fetch_assoc($query_agen2)){
+                           $query_multi_series[$key]['name'] = $row['nama_agen'];
+                        }
+                        $query_multi_series[$key]['query'] = mysql_query($sql." AND agen.id_agen = '$value' GROUP BY tgl_penjualan ORDER BY tgl_penjualan") or die(mysql_error());
+                     }
+                  }
+               }
+            }
+
+            // print_r($sql);exit;
+            $sql .= 'GROUP BY tgl_penjualan ORDER BY tgl_penjualan';
+            $query = mysql_query($sql) or die(mysql_error());
+
          }
          
          if($_SESSION['divisi']==2){
@@ -496,7 +561,6 @@ $(document).ready(function() {
 
             // print_r($sql);exit;
             $sql .= 'GROUP BY tgl_pembelian ORDER BY tgl_pembelian';
-            
             $query = mysql_query($sql) or die(mysql_error());
 
          }
@@ -504,16 +568,269 @@ $(document).ready(function() {
       }
    }
 
-if ($_GET['module']=='home'){
-   if ($_SESSION['leveluser']=='manajer'){
-      if ($_SESSION['divisi']==1) {
-?>
-        
-<?php
+   if ($_GET['module']=='home'){
+      if ($_SESSION['leveluser']=='manajer'){
+         if ($_SESSION['divisi']==1) {
+            if(isset($query_multi_series) && !empty($query_multi_series)){
+   ?>
+               <script type="text/javascript">
+                  // globally available
+                  $(function() {
+                     new Highcharts.chart('container', {
+   
+                        chart: {
+                           zoomType: 'x'
+                        },   
+   
+                        title: {
+                           <?php
+                              $agen = 'Semua Agen';
+                              if(isset($_GET[multi_agen][0])){
+                                 if($_GET[multi_agen][0] == 'all'){
+                                    $agen = 'Semua Agen';
+                                 }else{
+                                    if(sizeof($_GET[multi_agen]) == 1){
+                                       $agen_pertama = $_GET[multi_agen][0];
+                                       $query_agen = mysql_query("SELECT * FROM agen WHERE id_agen =  '$agen_pertama '");
+                                       while($row = mysql_fetch_assoc($query_agen)){
+                                          $agen = $row['nama_agen'];
+                                       }
+                                    }else{
+                                       $agen = '[';
+                                       foreach($_GET[multi_agen] as $key => $value){
+                                          $kode = $value;
+                                          $query_agen = mysql_query("SELECT * FROM agen WHERE id_agen =  '$kode'");
+                                          while($row = mysql_fetch_assoc($query_agen)){
+                                             $agen .= $row['nama_agen'].',';
+                                          }
+                                       }
+                                       $agen = rtrim($agen, ', ');
+                                       $agen .= ']';
+                                    }
+                                 }
+                              } 
+                           ?>
+   
+                           text: 'Grafik Perbandingan Penjualan Gas ke <?php echo $agen; ?>'
+                        },
+   
+                        subtitle: {
+                           text: document.ontouchstart === undefined ? 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+                        },
+   
+                        xAxis: {
+                              type: 'datetime',
+                        },
+                        
+                        yAxis: {
+                           title: {
+                              text: 'Jumlah penjualan gas'
+                           }
+                        },
+   
+                        legend: {
+                           layout: 'vertical',
+                           align: 'right',
+                           verticalAlign: 'middle'
+                        },
+   
+                        plotOptions: {
+                           area: {
+                              fillColor: {
+                                 linearGradient: {
+                                    x1: 0,
+                                    y1: 0,
+                                    x2: 0,
+                                    y2: 1
+                                 },
+   
+                                 stops: [
+                                    [0, Highcharts.getOptions().colors[0]],
+                                    [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                                 ]
+                              },
+   
+                              marker: {
+                                 radius: 2
+                              },
+   
+                              lineWidth: 1,
+                              states: {
+                                 hover: {
+                                    lineWidth: 1
+                                 }
+                              },
+   
+                              threshold: null
+                           }
+                        },
+   
+                        series: [
+   
+                           <?php
+                              foreach($query_multi_series as $key => $value){
+                           ?>
+                                 {
+                                    name: "<?php echo $value['name'] ?>",
+                                    data: [
+                                       <?php
+                                       while($row2 = mysql_fetch_array($value['query'])){
+                                          $tgl_penjualan = (int) strtotime($row2['tgl_penjualan']. '+7hours').'000';
+                                       ?>
+                                          [
+                                             <?php echo $tgl_penjualan ?>,
+                                             <?php echo $row2['jumlah'] ?>
+                                          ],
+                                       <?php
+                                       }
+                                       ?>
+                                    ] 
+                                 },
+   
+                           <?php
+                              }
+                           ?>
+                        
+                        ],
+   
+                        responsive: {
+                           rules: [{
+                              condition: {
+                                    maxWidth: 500
+                              },
+                              chartOptions: {
+                                    legend: {
+                                       layout: 'horizontal',
+                                       align: 'center',
+                                       verticalAlign: 'bottom'
+                                    }
+                              }
+                           }]
+                        }
+   
+                     }); 
+                  });
+               </script>
+   
+               <?php    
+               
+               }else{ 
+               
+               ?>
+               <script type="text/javascript">
+                     // globally available
+                     $(function() {
+   
+                        new Highcharts.Chart({
+                           chart: {
+                              renderTo: 'container',
+                              type: 'column',
+                              zoomType: 'x'
+                           },   
+                           title: {
+                              <?php
+                                 $agen = 'Semua Agen';
+                                 if(isset($_GET[multi_agen][0])){
+                                    if($_GET[multi_agen][0] == 'all'){
+                                       $agen = 'Semua agen';
+                                    }else{
+                                       if(sizeof($_GET[multi_agen]) == 1){
+                                          $agen_pertama = $_GET[multi_agen][0];
+                                          $query_agen = mysql_query("SELECT * FROM agen WHERE id_agen =  '$agen_pertama '");
+                                          while($row = mysql_fetch_assoc($query_agen)){
+                                             $agen = $row['nama_agen'];
+                                          }
+                                       }else{
+                                          $agen = '[';
+                                          foreach($_GET[multi_agen] as $key => $value){
+                                             $kode = $value;
+                                             $query_agen = mysql_query("SELECT * FROM agen WHERE id_agen =  '$kode'");
+                                             while($row = mysql_fetch_assoc($query_agen)){
+                                                $agen .= $row['nama_agen'].',';
+                                             }
+                                          }
+                                          $agen = rtrim($agen, ', ');
+                                          $agen .= ']';
+                                       }
+                                    }
+                                 } 
+                              ?>
+   
+                              text: 'Grafik Total Penjualan Gas ke <?php echo $agen; ?>'
+                           },
+                           subtitle: {
+                              text: document.ontouchstart === undefined ? 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+                           },
+                           xAxis: {
+                              type: 'datetime',
+                           },
+                           yAxis: {
+                              title: {
+                                 text: 'Jumlah penjualan gas'
+                              }
+                           },
+                           legend: {
+                              enabled: false
+                           },
+                           plotOptions: {
+                              area: {
+                                 fillColor: {
+                                    linearGradient: {
+                                       x1: 0,
+                                       y1: 0,
+                                       x2: 0,
+                                       y2: 1
+                                    },
+   
+                                    stops: [
+                                       [0, Highcharts.getOptions().colors[0]],
+                                       [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                                    ]
+                                 },
+   
+                                 marker: {
+                                    radius: 2
+                                 },
+   
+                                 lineWidth: 1,
+                                 states: {
+                                    hover: {
+                                       lineWidth: 1
+                                    }
+                                 },
+   
+                                 threshold: null
+                              }
+                           },
+   
+                           series:[
+                              {
+                                 type: 'area',
+                                 name: 'jumlah penjualan gas',
+                                 data: [
+                                    <?php
+                                       while($row = mysql_fetch_array($query)){
+                                          $tgl_penjualan = (int) strtotime($row['tgl_penjualan']. '+7hours').'000';
+                                    ?>
+                                       [
+                                          <?php echo $tgl_penjualan ?>,
+                                          <?php echo $row['jumlah'] ?>
+                                       ],
+                                    <?php
+                                       }
+                                    ?>
+                                 ]
+                              }
+                           ]
+                        });
+                     });	
+                  </script>
+            <?php  
+            }
+         }  
       }
    }
-}
-?>
+   ?>
 
 
 <?php
@@ -774,7 +1091,7 @@ if ($_GET['module']=='home'){
                      });
                   });	
                </script>
-<?php  
+         <?php  
          }
       }  
    }

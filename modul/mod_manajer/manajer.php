@@ -60,10 +60,14 @@ switch($_GET[act]){
 												<td>$r[username]</td>
 												<td>$r[nama_lengkap]</td>
 												<td>$r[email]</td>
-												<td>$r[no_telp]</td>
-												<td><a href='?module=manajer&act=editmanajer&id=$r[id_user]' class='btn btn-primary btn-sm' title='Edit' ><i class='fa fa-edit'></i> Edit</a>";
+												<td>$r[no_telp]</td>";
+												if($_SESSION['leveluser'] != 'admin' && $_SESSION['username'] == $r['username'])
+													echo "<td><a href='?module=manajer&act=editmanajer&id=$r[id_user]' class='btn btn-primary btn-sm' title='Edit' ><i class='fa fa-edit'></i> Edit</a>";
+												else
+													echo "<td></td>";
 												if ($_SESSION['leveluser']=='admin'){
 												echo"
+													<td><a href='?module=manajer&act=editmanajer&id=$r[id_user]' class='btn btn-primary btn-sm' title='Edit' ><i class='fa fa-edit'></i> Edit</a>
 													<a href='$aksi?module=manajer&act=hapus&id=$r[id_user]' class='btn btn-danger btn-sm' title='Hapus' onClick=\"return confirm('Apakah Anda Yakin Untuk Menghapus Data Ini ?')\"><i class='fa fa-trash'></i> Hapus</a>";
 													}
 													echo"

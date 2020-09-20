@@ -216,31 +216,63 @@
 										<label class='form-label-sm'>Dari Tanggal </label>";
 										if(isset($_GET['dari']))
 											echo "<input type='date' name='dari' class='form-control form-control-sm' value='$_GET[dari]' required>";
-										else
-											echo "<input type='date' name='dari' class='form-control form-control-sm' required>";
+										else{
+											$last_year = date('Y-m-d', strtotime('-1year', strtotime(date('Y-m-d'))));
+											echo "<input type='date' name='dari' class='form-control form-control-sm' value='$last_year' required>";
+										}
 									echo "</div>
 									<div class='col-md-2 my-1'>
 										<label class='form-label-sm'>Sampai Tanggal</label>";
 										if(isset($_GET['sampai']))
 											echo "<input type='date' name='sampai' class='form-control form-control-sm' value='$_GET[sampai]' required>";
-										else
-											echo "<input type='date' name='sampai' class='form-control form-control-sm' required>";
+										else{
+											$now = date('Y-m-d');
+											echo "<input type='date' name='sampai' class='form-control form-control-sm' value='$now' required>";
+										}
 									echo "</div>
 									<div class='col-md-2 my-1'>
-										<label class='form-label-sm'>Agent </label>
-										<select name='agen' class='form-control form-control-sm'>
-											<option value=''>All Agent</option>";
-											while ($r=mysql_fetch_assoc($agen)){
-												if(isset($_GET['agen'])){
-													if($_GET['agen'] == $r['id_agen'])
-														echo "<option value='$r[id_agen]' selected>$r[nama_agen]</option>";
+										<label class='form-label-sm'>Gas </label>
+										<select name='gas' class='form-control form-control-sm'>
+											<option value=''>All Weight</option>";
+											while ($r=mysql_fetch_assoc($gas)){
+												if(isset($_GET['gas'])){
+													if($_GET['gas'] == $r['id_gas'])
+														echo "<option value='$r[id_gas]' selected>$r[ukuran]</option>";
 													else
-														echo "<option value='$r[id_agen]'>$r[nama_agen]</option>";
+														echo "<option value='$r[id_gas]'>$r[ukuran]</option>";
 												}else
-													echo "<option value='$r[id_agen]'>$r[nama_agen]</option>";
+													echo "<option value='$r[id_gas]'>$r[ukuran]</option>";
 											}
-									echo " </select> 
-									</div>
+								echo " </select> 
+								</div>
+								<div class='col-md-2 my-1'>
+									<label class='form-label-sm'>Agen </label>
+										<select name='multi_agen[]' class='form-control form-control-sm' id='multi_agen' multiple>";
+											if(!isset($_GET[multi_agen]) || (isset($_GET[multi_agen][0]) && $_GET[multi_agen][0] == 'all'))
+												echo "<option value='all' selected>All Agen</option>";
+											else
+												echo "<option value='all'>All Agen</option>";
+
+											$tampil=mysql_query("SELECT * FROM agen ORDER BY nama_agen ASC");
+											while($r=mysql_fetch_array($tampil)){
+												if(isset($_GET[multi_agen])){
+													if(in_array($r['id_agen'], $_GET[multi_agen]))
+														echo "<option value=$r[id_agen] selected>$r[nama_agen]</option>";
+													else
+														echo "<option value=$r[id_agen]>$r[nama_agen]</option>";
+												}
+												else
+													echo "<option value=$r[id_agen]>$r[nama_agen]</option>";
+											}
+										echo "</select>";
+												
+									if(isset($_GET[bandingkan]) && isset($_GET[multi_agen][0])){
+										echo "<input type='checkbox' name='bandingkan' id='bandingkan' checked> Bandingkan";
+									}else{
+										echo "<input type='checkbox' name='bandingkan' id='bandingkan'> Bandingkan";
+									}
+
+						  		echo "</div>
 									<div class='col-auto' style='margin-top: 1.85rem!important;'>			
 										<input type='submit' class='btn btn-info btn-sm' value='Lihat'>
 									</div>
@@ -268,18 +300,25 @@
 								$sampai=tgl_indo($_GET[sampai]);
 			
 								if ($_GET[dari] == '' AND $_GET[sampai] == ''){		
-									echo"<span style='font-size:1em'>Semua Periode</span>";
+									echo"<span style='font-size:1em'>1 Tahun Terakhir</span>";
 								}
 								if ($_GET[dari] != '' AND $_GET[sampai] != ''){
-									echo"<span class='badge badge-info' style='font-size:1em;'>Dari Tanggal $dari Sampai tanggal $sampai </span>&nbsp; ";
-								}
-
-								if ($_GET[agen] != ''){
-									$query = mysql_query("SELECT * FROM agen WHERE id_agen = '$_GET[agen]' limit 1");
-									while($r = mysql_fetch_assoc($query)){
-										echo"<span class='badge badge-info' style='font-size:1em;'> $r[nama_agen]</span>";
+									$diff = abs(strtotime($_GET[sampai]) - strtotime($_GET[dari]));
+									$years = ($diff / (365*60*60*24));
+								
+									if($years / floor($years) == 1){
+										echo"<span style='font-size:1em'>".$years." Tahun Terakhir</span>";
+									}else{
+										echo"<span class='badge badge-info' style='font-size:1em;'>Dari Tanggal $dari Sampai tanggal $sampai </span>&nbsp; ";
 									}
 								}
+
+								// if ($_GET[agen] != ''){
+								// 	$query = mysql_query("SELECT * FROM agen WHERE id_agen = '$_GET[agen]' limit 1");
+								// 	while($r = mysql_fetch_assoc($query)){
+								// 		echo"<span class='badge badge-info' style='font-size:1em;'> $r[nama_agen]</span>";
+								// 	}
+								// }
 							echo "</h1>
 						</div>
 					</div>

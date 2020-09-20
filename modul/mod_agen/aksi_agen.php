@@ -13,7 +13,7 @@ if ($module=='agen' AND $act=='hapus'){
 
 // Input agen
 elseif ($module=='agen' AND $act=='input'){
-  mysql_query("INSERT INTO agen(nama_agen,alamat,no_telp,kuota) VALUES('$_POST[nama_agen]','$_POST[alamat]','$_POST[no_telp]','$_POST[no_telp]')");
+  mysql_query("INSERT INTO agen(nama_agen,alamat,no_telp,kuota) VALUES('$_POST[nama_agen]','$_POST[alamat]','$_POST[no_telp]','$_POST[kuota]')");
   header('location:../../media.php?module='.$module);
 }
 
