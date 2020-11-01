@@ -41,7 +41,7 @@ foreach($agen_surat as $key => $value){
 								   '$value',
 								   '$_POST[jumlah]')");
 }
-header('location:../../media.php?module=surat');
+header('location:../../media.php?module=surat&id_surat='.$_POST[id_surat].'&redirect_cetak=1');
 }
 // Update surat
 elseif ($module=='surat' AND $act=='update'){

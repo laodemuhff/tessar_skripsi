@@ -252,7 +252,7 @@ case "datasurat":
 								  </div>
 								  <div class='form-group'>
 									<label for='exampleInputEmail1'>Jumlah</label>
-									<input type='number' name='jumlah' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' placeholder='Masukkan Jumlah' required>
+									<input type='number' min='0' name='jumlah' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' placeholder='Masukkan Jumlah' required>
 								  </div>
 								  <button type='submit' class='btn btn-primary'>Simpan</button>
 								</form>

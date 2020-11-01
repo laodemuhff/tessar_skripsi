@@ -579,6 +579,7 @@ $(document).ready(function() {
                      new Highcharts.chart('container', {
    
                         chart: {
+                           type: 'column',
                            zoomType: 'x'
                         },   
    
@@ -635,33 +636,9 @@ $(document).ready(function() {
                         },
    
                         plotOptions: {
-                           area: {
-                              fillColor: {
-                                 linearGradient: {
-                                    x1: 0,
-                                    y1: 0,
-                                    x2: 0,
-                                    y2: 1
-                                 },
-   
-                                 stops: [
-                                    [0, Highcharts.getOptions().colors[0]],
-                                    [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                                 ]
-                              },
-   
-                              marker: {
-                                 radius: 2
-                              },
-   
-                              lineWidth: 1,
-                              states: {
-                                 hover: {
-                                    lineWidth: 1
-                                 }
-                              },
-   
-                              threshold: null
+                           column: {
+                                 pointPadding: 0.2,
+                                 borderWidth: 0
                            }
                         },
    
@@ -720,7 +697,6 @@ $(document).ready(function() {
                <script type="text/javascript">
                      // globally available
                      $(function() {
-   
                         new Highcharts.Chart({
                            chart: {
                               renderTo: 'container',
@@ -772,40 +748,16 @@ $(document).ready(function() {
                            legend: {
                               enabled: false
                            },
+
                            plotOptions: {
-                              area: {
-                                 fillColor: {
-                                    linearGradient: {
-                                       x1: 0,
-                                       y1: 0,
-                                       x2: 0,
-                                       y2: 1
-                                    },
-   
-                                    stops: [
-                                       [0, Highcharts.getOptions().colors[0]],
-                                       [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                                    ]
-                                 },
-   
-                                 marker: {
-                                    radius: 2
-                                 },
-   
-                                 lineWidth: 1,
-                                 states: {
-                                    hover: {
-                                       lineWidth: 1
-                                    }
-                                 },
-   
-                                 threshold: null
+                              column: {
+                                    pointPadding: 0.2,
+                                    borderWidth: 0
                               }
                            },
    
                            series:[
                               {
-                                 type: 'area',
                                  name: 'jumlah penjualan gas',
                                  data: [
                                     <?php
@@ -845,6 +797,7 @@ if ($_GET['module']=='home'){
                   new Highcharts.chart('container2', {
 
                      chart: {
+                        type: 'column',
                         zoomType: 'x'
                      },   
 
@@ -901,33 +854,9 @@ if ($_GET['module']=='home'){
                      },
 
                      plotOptions: {
-                        area: {
-                           fillColor: {
-                              linearGradient: {
-                                 x1: 0,
-                                 y1: 0,
-                                 x2: 0,
-                                 y2: 1
-                              },
-
-                              stops: [
-                                 [0, Highcharts.getOptions().colors[0]],
-                                 [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                              ]
-                           },
-
-                           marker: {
-                              radius: 2
-                           },
-
-                           lineWidth: 1,
-                           states: {
-                              hover: {
-                                 lineWidth: 1
-                              }
-                           },
-
-                           threshold: null
+                        column: {
+                              pointPadding: 0.2,
+                              borderWidth: 0
                         }
                      },
 
@@ -1038,40 +967,16 @@ if ($_GET['module']=='home'){
                         legend: {
                            enabled: false
                         },
+
                         plotOptions: {
-                           area: {
-                              fillColor: {
-                                 linearGradient: {
-                                    x1: 0,
-                                    y1: 0,
-                                    x2: 0,
-                                    y2: 1
-                                 },
-
-                                 stops: [
-                                    [0, Highcharts.getOptions().colors[0]],
-                                    [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                                 ]
-                              },
-
-                              marker: {
-                                 radius: 2
-                              },
-
-                              lineWidth: 1,
-                              states: {
-                                 hover: {
-                                    lineWidth: 1
-                                 }
-                              },
-
-                              threshold: null
+                           column: {
+                              pointPadding: 0.2,
+                              borderWidth: 0
                            }
                         },
 
                         series:[
                            {
-                              type: 'area',
                               name: 'jumlah pembelian gas',
                               data: [
                                  <?php
@@ -1094,6 +999,24 @@ if ($_GET['module']=='home'){
          <?php  
          }
       }  
+   }
+}
+?>
+
+<?php
+if ($_GET['module']=='surat' && isset($_GET['id_surat']) && isset($_GET['redirect_cetak'])){
+   if ($_SESSION['leveluser']=='manajer' || $_SESSION['leveluser'] == 'petugas'){
+      if ($_SESSION['divisi']==1) {
+?>
+         <script>
+               $(function(){
+                   var id_surat = "<?php echo $_GET['id_surat'] ?>"
+                   
+                   window.open('modul/mod_surat/cetak.php?id='+id_surat, '_blank');
+               })
+         </script>
+<?php
+      }
    }
 }
 ?>

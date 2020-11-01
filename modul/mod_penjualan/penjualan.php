@@ -38,6 +38,7 @@ switch($_GET[act]){
 												<th>No</th>
 												<th>Kode penjualan</th>
 												<th>Kode Agen</th>
+												<th>Alamat Agen</th>
 												<th>Tgl. penjualan</th>
 												<th>Petugas</th>
 												<th>Aksi</th>
@@ -55,6 +56,7 @@ switch($_GET[act]){
 												<td>$no</td>
 												<td>$r[kode_penjualan]</td>
 												<td>$r[id_agen]: $r[nama_agen]</td>
+												<td>$r[alamat]</td>
 												<td>$tanggal</td>
 												<td>$r[nama_lengkap]</td>
 												<td><a href=?module=penjualan&act=media.php?module=penjualan&act=edittransaksipenjualan&kode=$r[kode_penjualan] class='btn btn-primary btn-xs' title='Edit'><i class='fa fa-edit'> Ubah</i></a>
@@ -165,7 +167,7 @@ switch($_GET[act]){
 								  </div>
 								  <div class='form-group'>
 									<label for='exampleInputEmail1'>Jumlah</label>
-									<input type='number' name='jumlah' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' placeholder='Masukkan Jumlah' required>
+									<input type='number' min='0' name='jumlah' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' placeholder='Masukkan Jumlah' required>
 								  </div>
 								  <button type='submit' class='btn btn-primary'>Simpan</button>
 								</form>
@@ -191,6 +193,10 @@ switch($_GET[act]){
 								  <div class='form-group'>
 									<label for='exampleInputEmail1'>Nama</label>
 									<input type='text' name='penjualan' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[nama_agen]' readonly>
+								  </div>
+								  <div class='form-group'>
+									<label for='exampleInputEmail1'>Alamat</label>
+									<input type='text' name='penjualan' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[alamat]' readonly>
 								  </div>
 								</form>
 																
@@ -307,6 +313,10 @@ case "detailpenjualan":
 								  <div class='form-group'>
 									<label for='exampleInputEmail1'>Nama</label>
 									<input type='text' name='penjualan' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[nama_agen]' readonly>
+								  </div>
+								  <div class='form-group'>
+									<label for='exampleInputEmail1'>Alamat</label>
+									<input type='text' name='penjualan' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[alamat]' readonly>
 								  </div>
 								</form>
 																
@@ -466,6 +476,10 @@ case "detailpenjualan":
 								  <div class='form-group'>
 									<label for='exampleInputEmail1'>Nama</label>
 									<input type='text' name='penjualan' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[nama_agen]' readonly>
+								  </div>
+								  <div class='form-group'>
+									<label for='exampleInputEmail1'>Alamat</label>
+									<input type='text' name='penjualan' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[alamat]' readonly>
 								  </div>
 								</form>
 																
