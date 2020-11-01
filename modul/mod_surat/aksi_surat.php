@@ -14,8 +14,23 @@ if ($module=='surat' AND $act=='hapus'){
 
 // Input surat
 elseif ($module=='surat' AND $act=='input'){
-$kode=$_POST[id_surat];
-  mysql_query("INSERT INTO surat_jalan(id_surat,
+	$total_biaya = 0;
+	if(isset($_POST['rincian_biaya'])){
+		foreach($_POST['rincian_biaya'] as $item){
+			$result = mysql_query("INSERT INTO rincian_biaya_surat_jalan(
+										id_surat,
+									 	keterangan,
+									  	biaya)
+							VALUES('$_POST[id_surat]',
+								   '$item[keterangan]',
+								   '$item[biaya]')") or die(mysql_error());
+
+			$total_biaya += $item['biaya'];
+		}
+	}
+
+	$kode=$_POST[id_surat];
+  	mysql_query("INSERT INTO surat_jalan(id_surat,
 									  id_supir,
 									  tanggal,
 									  biaya,
@@ -23,7 +38,7 @@ $kode=$_POST[id_surat];
 							VALUES('$_POST[id_surat]',
 							       '$_POST[supir]',
 								   '$_POST[tanggal]',
-								   '$_POST[biaya]',
+								   '$total_biaya',
 								   '$_SESSION[userid]')");
 header('location:../../media.php?module=surat&act=datasurat&kode='.$kode);
 }

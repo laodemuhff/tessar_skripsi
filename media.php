@@ -423,6 +423,7 @@ elseif ($_GET['module']=='laporan'){
 <script src="https://code.highcharts.com/highcharts.js"></script> 
 <!-- END Java Script for this page -->
 <script src="assets/plugins/select2/js/select2.min.js"></script>
+<script src="js/repeater/jquery.repeater.js"></script>
 <script>								
 $(document).ready(function() {
     $('.select2').select2();
@@ -1020,5 +1021,20 @@ if ($_GET['module']=='surat' && isset($_GET['id_surat']) && isset($_GET['redirec
    }
 }
 ?>
+
+<script>
+   $(function(){
+      $('.repeater').repeater({
+         initEmpty: true,
+         show: function () {
+            $(this).slideDown();
+         },
+         hide: function (deleteElement) {
+            $(this).slideUp(deleteElement);
+         }
+      });
+   })
+
+</script>
 </body>
 </html>

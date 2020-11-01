@@ -121,32 +121,40 @@ switch($_GET[act]){
 								
 							<div class='card-body'>
 								
-								<form method=POST action='$aksi?module=surat&act=input'>
-								  <div class='form-group'>
-									<label for='exampleInputEmail1'>ID Surat Jalan</label>
-									<input type='text' name='id_surat' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$kode' readonly>
-								  </div>
-								  <div class='form-group'>
-									<label for='exampleInputEmail1'>Supir</label>
-										<select class='form-control select2' name='supir' required>
-											<option value=''>- Pilih Supir -</option>";
-												$tampil=mysql_query("SELECT * FROM supir ORDER BY nama ASC");
-												while($r=mysql_fetch_array($tampil)){
-										echo"<option value=$r[id_supir]>$r[id_supir]: $r[nama]</option>";
-											}
-									echo"</select>
-								 </div>
-								  <div class='form-group'>
-									<label for='exampleInputEmail1'>Biaya</label>
-									<input type='number' name='biaya' min='o' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' placeholder='Masukkan Biaya' required>
-								  </div>
-								  <div class='form-group'>
-									<label for='exampleInputEmail1'>Tanggal</label>
-									<input type='date' name='tanggal' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' required>
-								  </div>
-								  <button type='submit' class='btn btn-primary'>Simpan</button>
+								<form class='repeater' method=POST action='$aksi?module=surat&act=input'>
+									<div class='form-group'>
+										<label for='exampleInputEmail1'>ID Surat Jalan</label>
+										<input type='text' name='id_surat' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$kode' readonly>
+									</div>
+									<div class='form-group'>
+										<label for='exampleInputEmail1'>Supir</label>
+											<select class='form-control select2' name='supir' required>
+												<option value=''>- Pilih Supir -</option>";
+													$tampil=mysql_query("SELECT * FROM supir ORDER BY nama ASC");
+													while($r=mysql_fetch_array($tampil)){
+											echo"<option value=$r[id_supir]>$r[id_supir]: $r[nama]</option>";
+												}
+										echo"</select>
+									</div>
+									<div class='form-group'>
+										<label for='rincianBiaya'>Rincian Biaya</label>
+										<div data-repeater-list='rincian_biaya'>
+											<div data-repeater-item style='margin-bottom:10px'>
+												<div class='input-group'>
+													<input type='text' name='keterangan' class='form-control' placeholder='Keterangan' required/>
+													<input type='number' min='0' name='biaya' class='form-control' placeholder='Biaya' required/>
+													<a data-repeater-delete type='button' class='btn btn-danger' style='color:white'>Delete</a>
+												</div>
+											</div>
+										</div>
+										<a data-repeater-create type='button' class='btn btn-info' style='color:white'><i class='fa fa-plus'></i> Add</a>
+									</div>
+									<div class='form-group'>
+										<label for='exampleInputEmail1'>Tanggal</label>
+										<input type='date' name='tanggal' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' required>
+									</div>
+									<button type='submit' class='btn btn-primary'>Simpan</button>
 								</form>
-																
 							</div>														
 						</div><!-- end card-->					
                     </div>
@@ -340,6 +348,9 @@ case "datasurat":
     $surat=mysql_query("SELECT * FROM surat_jalan JOIN supir ON surat_jalan.id_supir=supir.id_supir
 													 JOIN user ON surat_jalan.id_user=user.id_user 
 													 WHERE surat_jalan.id_surat='$_GET[id]'");
+
+	$rincian_biaya=mysql_query("SELECT * FROM rincian_biaya_surat_jalan WHERE id_surat='$_GET[id]'");
+
     $p=mysql_fetch_array($surat);
 	$tanggal=tgl_indo($p[tanggal]);
 	$biayarp    = format_rupiah($p[biaya]);
@@ -366,9 +377,24 @@ case "datasurat":
 									<input type='text' name='pembelian' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$tanggal' readonly>
 								  </div>
 								  <div class='form-group'>
-									<label for='exampleInputEmail1'>Biaya</label>
+									<label for='exampleInputEmail1'>Total Biaya</label>
 									<input type='text' name='pembelian' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$biayarp' readonly>
-								  </div>";
+								  </div>
+								  <div class='form-group'>
+									  <label for='rincianBiaya'>Rincian Biaya</label>";
+									 
+									  		if(isset($rincian_biaya)){
+												while($rincian = mysql_fetch_assoc($rincian_biaya)){
+													echo  
+													"<div class='input-group'>
+														<input type='text' name='keterangan' class='form-control' value='$rincian[keterangan]' readonly/>
+														<input type='text' name='biaya' class='form-control' value='$rincian[biaya]' readonly/>
+													</div>";
+												}
+											}
+										  echo "
+								  </div> 
+								  ";
 								  if ($gambar!='') {
 								  echo"
 								  <div class='form-group'>
