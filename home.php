@@ -208,7 +208,7 @@
 							<h4 class='main-title float-left'>Grafik</h4>
 						</div>
 						<div class='box-body col-md-12' style='background-color:white; padding:20px'>
-							<h5>Filter Grafik</h5>
+							<h5>Filter Grafiks</h5>
 							<form action='' method='GET'>
 								<div class='form-row align-items-center'>
 									<input type='hidden' name='module' value='home'>
@@ -379,7 +379,7 @@
 							<h4 class='main-title float-left'>Grafik</h4>
 						</div>
 						<div class='box-body col-md-12' style='background-color:white; padding:20px'>
-							<h5>Filter Grafik</h5>
+							<h5>Filter Grafiks</h5>
 							<form action='' method='GET'>
 								<div class='form-row align-items-center'>
 									<input type='hidden' name='module' value='home'>
