@@ -25,11 +25,15 @@ switch($_GET[act]){
 				<div class='row'>
 				
 						<div class='col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-12'>						
-							<div class='card mb-3'>
-								<div class='card-header'>
-									<button type='button' class='btn btn-success' onclick=\"window.location.href='?module=pembelian&act=tambahpembelian';\"><i class='fa fa-plus'></i>Tambah</button>
-								</div>
-									
+							<div class='card mb-3'>";
+							if($_SESSION['leveluser'] == 'petugas' && $_SESSION['divisi'] == 2){
+								echo"
+									<div class='card-header'>
+										<button type='button' class='btn btn-success' onclick=\"window.location.href='?module=pembelian&act=tambahpembelian';\"><i class='fa fa-plus'></i>Tambah</button>
+									</div>";
+							}
+
+							echo"	
 								<div class='card-body'>
 									<div class='table-responsive'>
 									<table id='example1' class='table table-bordered table-hover display'>
@@ -57,7 +61,11 @@ switch($_GET[act]){
 												<td>$r[kode_supplier]: $r[nama_supplier]</td>
 												<td>$tanggal</td>
 												<td>$r[nama_lengkap]</td>
-												<td><a href=?module=pembelian&act=media.php?module=pembelian&act=edittransaksipembelian&kode=$r[kode_pembelian] class='btn btn-primary btn-xs' title='Edit'><i class='fa fa-edit'> Ubah</i></a>
+												<td>";
+												if($_SESSION['leveluser'] == 'petugas' && $_SESSION['divisi'] == 2){
+													echo "<a href=?module=pembelian&act=media.php?module=pembelian&act=edittransaksipembelian&kode=$r[kode_pembelian] class='btn btn-primary btn-xs' title='Edit'><i class='fa fa-edit'> Ubah</i></a>";
+												}
+												echo "
 													<a href=?module=pembelian&act=detailpembelian&id=$r[kode_pembelian] class='btn btn-info btn-xs' title='Detail'><i class='fa fa-folder'> Detail</i></a>
 													<a href=modul/mod_pembelian/cetak.php?kode=$r[kode_pembelian] target='_blank' class='btn btn-warning btn-xs' title='Cetak'><i class='fa fa-print'> Cetak</i></a>
 												</td>
@@ -279,16 +287,38 @@ case "detailpembelian":
 								
 							<div class='card-body'>
 								
-								<form>
+								<form method=POST action='$aksi?module=pembelian&act=upload_nota' enctype='multipart/form-data'>
 								  <div class='form-group'>
 									<label for='exampleInputEmail1'>Kode Pembelian</label>
-									<input type='text' name='pembelian' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[kode_pembelian]' readonly>
+									<input type='text' name='kode_pembelian' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[kode_pembelian]' readonly>
 								  </div>
 								  <div class='form-group'>
 									<label for='exampleInputEmail1'>Tgl. Pembelian</label>
-									<input type='text' name='pembelian' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[tgl_pembelian]' readonly>
-								  </div>
-								</form>
+									<input type='text' name='tgl_pembelian' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[tgl_pembelian]' readonly>
+								  </div>";
+
+								if($_SESSION['leveluser'] == 'petugas' && $_SESSION['divisi'] == 2){
+									echo
+									"<div class='form-group'>
+										<label for='exampleInputEmail1'>Upload Nota Pembelian</label>
+										<input type='file' name='nota_pembelian' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' readonly>
+									</div>";
+								}else{
+									echo "<div class='form-group'>
+										<label for='exampleInputEmail1'>Nota Pembelian</label>
+									</div>";
+								}
+								 
+								$nota = mysql_fetch_assoc(mysql_query("SELECT foto_nota FROM nota_pembelian WHERE kode_pembelian = '$p[kode_pembelian]' "));
+								if(isset($nota['foto_nota'])){
+									echo "<img src='$nota[foto_nota]' style='width:300px; height:300px'></img><br>";
+								}
+
+								if($_SESSION['leveluser'] == 'petugas' && $_SESSION['divisi'] == 2){
+								  echo "<button type='submit' class='btn btn-primary'>Update</button>";
+								}
+
+								echo "</form>
 																
 							</div>														
 						</div><!-- end card-->					

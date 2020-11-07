@@ -121,4 +121,26 @@ $edit=mysql_query("SELECT * FROM detail_pembelian WHERE id_detail='$_GET[kode]'"
 								'$kodes')");
   header('location:../../media.php?module=pembelian&act=edittransaksipembelian&kode='.$kodes);
 }
+
+	elseif ($module=='pembelian' AND $act=='upload_nota'){
+		$nama_file   = $_FILES['nota_pembelian']['name'];
+
+		$vdir_upload = "../../files/";
+		$vfile_upload = $vdir_upload . $nama_file;
+
+		//Simpan gambar dalam ukuran sebenarnya
+		move_uploaded_file($_FILES['nota_pembelian']["tmp_name"], $vfile_upload);
+
+		// cek if kode pembelian exist 
+		$cek_nota = mysql_query("SELECT * FROM nota_pembelian WHERE kode_pembelian = '$_POST[kode_pembelian]' limit 1");
+
+		if(empty(mysql_fetch_assoc($cek_nota))){
+			mysql_query("INSERT INTO nota_pembelian(kode_pembelian, foto_nota) VALUES('$_POST[kode_pembelian]', 'files/$nama_file')");
+		}else{
+			mysql_query("UPDATE nota_pembelian SET foto_nota = 'files/$nama_file' WHERE kode_pembelian = '$_POST[kode_pembelian]' ");
+		}
+		// $size= $_FILES['nota_pembelian']['size'];
+		// print_r($size);exit;
+	  	header('location:../../media.php?module=pembelian&act=detailpembelian&id='.$_POST['kode_pembelian']);
+	}
 ?>

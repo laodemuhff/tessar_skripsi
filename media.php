@@ -156,11 +156,13 @@
 							</ul>
                </li>
 					<li class="submenu">
-                        <a href="#"><i class="fa fa-fw fa-laptop"></i> <span> Master Transaksi </span> <span class="menu-arrow"></span></a>
-							<ul class="list-unstyled">
-								<li><a href="media.php?module=penjualan">Penjualan</a></li>
-							</ul>
-                    </li>
+                  <a href="#"><i class="fa fa-fw fa-laptop"></i> <span> Master Transaksi </span> <span class="menu-arrow"></span></a>
+                     <ul class="list-unstyled">
+                     <li>
+                  <a href="media.php?module=penjualan">Penjualan</a>
+               </li>
+				</ul>
+         </li>
 			
 				
             </ul>
@@ -186,11 +188,13 @@
 							</ul>
                     </li>
 					<li class="submenu">
-                        <a href="#"><i class="fa fa-fw fa-laptop"></i> <span> Master Transaksi </span> <span class="menu-arrow"></span></a>
-							<ul class="list-unstyled">
-								<li><a href="media.php?module=pembelian">Pembelian</a></li>
-							</ul>
-                    </li>
+                  <a href="#"><i class="fa fa-fw fa-laptop"></i> <span> Master Transaksi </span> <span class="menu-arrow"></span></a>
+                  <ul class="list-unstyled">
+                     <li>
+                        <a href="media.php?module=pembelian">Pembelian</a>
+                     </li>
+                  </ul>
+               </li>
 			
 				
             </ul>
@@ -223,11 +227,10 @@
                </li>
 					<li class="submenu">
 						<a href="media.php?module=agen"><i class="fa fa-fw fa-laptop"></i><span> Data Agen </span> </a>
-                    </li>
+               </li>
 					<li class="submenu">
-                        <a href="media.php?module=laporan"><i class="fa fa-fw fa-copy"></i><span> Laporan </span> </a>
-                    </li>
-			
+                  <a href="media.php?module=laporan"><i class="fa fa-fw fa-copy"></i><span> Laporan </span> </a>
+               </li>
 				
             </ul>
 			<?php
@@ -253,9 +256,17 @@
 							</ul>
                </li>
 					<li class="submenu">
-                        <a href="media.php?module=laporan"><i class="fa fa-fw fa-copy"></i><span> Laporan </span> </a>
-                    </li>
-			
+                  <a href="media.php?module=laporan"><i class="fa fa-fw fa-copy"></i><span> Laporan </span> </a>
+               </li>
+               
+               <li class="submenu">
+                  <a href="#"><i class="fa fa-fw fa-laptop"></i> <span> Master Transaksi </span> <span class="menu-arrow"></span></a>
+                  <ul class="list-unstyled">
+                     <li>
+                        <a href="media.php?module=pembelian">Pembelian</a>
+                     </li>
+                  </ul>
+               </li>
 				
             </ul>
 			<?php
@@ -342,7 +353,7 @@ elseif ($_GET['module']=='manajer'){
 }
 // Bagian pembelian
 elseif ($_GET['module']=='pembelian'){
-  if ($_SESSION['leveluser']=='admin' OR $_SESSION['leveluser']=='petugas'){
+  if ($_SESSION['leveluser']=='admin' OR $_SESSION['leveluser']=='petugas' OR $_SESSION['leveluser']=='manajer'){
     include "modul/mod_pembelian/pembelian.php";
   }
 }
