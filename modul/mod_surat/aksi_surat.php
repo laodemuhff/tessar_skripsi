@@ -86,4 +86,56 @@ elseif ($module=='surat' AND $act=='upload'){
   	echo "<script>window.alert('Upload Surat Berhasil');
         window.location=('../../media.php?module=surat')</script>";
 }
+
+elseif ($module == 'surat' AND $act == 'update_detail_surat'){
+
+	if(isset($_POST['rincian_biaya_tambahan']) && isset($_FILES['rincian_biaya_tambahan'])){
+		
+		//upload foto
+
+		$vfile_upload_data = array();
+		foreach($_FILES['rincian_biaya_tambahan']['name'] as $key => $item){
+			$nama_file = $item['nota'];
+
+			//direktori file
+			$vdir_upload = "../../files/";
+			$vfile_upload = $vdir_upload . $nama_file;
+			$vfile_upload_data[] = $nama_file; 
+
+			//Simpan gambar dalam ukuran sebenarnya
+			move_uploaded_file($_FILES['rincian_biaya_tambahan']["tmp_name"][$key]['nota'], $vfile_upload);
+		}
+
+		// truncate scondary type
+		$total_biaya_secondary = 0;
+		$query = mysql_query("SELECT SUM(biaya) as total_biaya_secondary FROM rincian_biaya_surat_jalan WHERE id_surat = '$_POST[id_surat]' AND `type` = 'secondary' ") or die(mysql_error());
+		$total_biaya_secondary = mysql_fetch_assoc($query);
+		$total_biaya_secondary = isset($total_biaya_secondary['total_biaya_secondary']) ? $total_biaya_secondary['total_biaya_secondary'] : 0;
+
+		mysql_query("DELETE FROM rincian_biaya_surat_jalan WHERE id_surat = '$_POST[id_surat]' AND `type` = 'secondary' ") or die(mysql_error());
+
+		$total_biaya = $_POST['current_total_biaya'] - $total_biaya_secondary;
+	
+		foreach($_POST['rincian_biaya_tambahan'] as $key => $item){
+			$result = mysql_query("INSERT INTO rincian_biaya_surat_jalan(
+										id_surat,
+									 	keterangan,
+										`type`,
+										foto_nota,
+									  	biaya)
+							VALUES('$_POST[id_surat]',
+								   '$item[keterangan]',
+								   'secondary',
+								   'files/$vfile_upload_data[$key]',
+								   '$item[biaya]')") or die(mysql_error());
+
+			$total_biaya += $item['biaya'];
+		}
+
+		mysql_query("UPDATE surat_jalan SET biaya = '$total_biaya' WHERE id_surat = '$_POST[id_surat]' ");
+
+		header('location:../../media.php?module=surat&act=detailsurat&id='.$_POST['id_surat']);
+
+	}
+}
 ?>

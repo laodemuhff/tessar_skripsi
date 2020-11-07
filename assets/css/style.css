@@ -1204,3 +1204,13 @@ a.btn:focus {
 .label-info {
     background-color: #5bc0de;
 }
+
+.upload-file {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+#btn-modal-nota:hover{
+    cursor: pointer;
+}

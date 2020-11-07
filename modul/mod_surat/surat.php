@@ -349,7 +349,8 @@ case "datasurat":
 													 JOIN user ON surat_jalan.id_user=user.id_user 
 													 WHERE surat_jalan.id_surat='$_GET[id]'");
 
-	$rincian_biaya=mysql_query("SELECT * FROM rincian_biaya_surat_jalan WHERE id_surat='$_GET[id]'");
+	$rincian_biaya=mysql_query("SELECT * FROM rincian_biaya_surat_jalan WHERE id_surat='$_GET[id]' AND `type` = 'primary' ");
+	$rincian_biaya_tambahan=mysql_query("SELECT * FROM rincian_biaya_surat_jalan WHERE id_surat='$_GET[id]' AND `type` = 'secondary'");
 
     $p=mysql_fetch_array($surat);
 	$tanggal=tgl_indo($p[tanggal]);
@@ -394,6 +395,41 @@ case "datasurat":
 											}
 										  echo "
 								  </div> 
+								  <div class='form-group'>
+									  <label for='rincianBiaya'>Rincian Biaya Tambahan</label>";
+									 
+									  		if(isset($rincian_biaya_tambahan)){
+												while($rincian = mysql_fetch_assoc($rincian_biaya_tambahan)){
+													echo  
+													"<div class='input-group row' style='margin-left:0px'>
+														<input type='text' name='keterangan' class='form-control col-md-5' value='$rincian[keterangan]' readonly/>
+														<input type='text' name='biaya' class='form-control col-md-5' value='$rincian[biaya]' readonly/>
+														<button id='btn-modal-nota' class='form-control col-md-2' value='Cek Nota' data-toggle='modal' data-target='#modalNota$rincian[id]'>Cek Nota</button>
+													</div>
+													
+													<div class='modal' tabindex='-1' role='dialog' id='modalNota$rincian[id]'>
+														<div class='modal-dialog' role='document'>
+															<div class='modal-content'>
+															<div class='modal-header'>
+																<h5 class='modal-title'>Modal title</h5>
+																<button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+																<span aria-hidden='true'>&times;</span>
+																</button>
+															</div>
+															<div class='modal-body'>
+																<img src='$rincian[foto_nota]' width='400px' height='400px'></img>
+															</div>
+															<div class='modal-footer'>
+																<button type='button' class='btn btn-primary'>Save changes</button>
+																<button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button>
+															</div>
+															</div>
+														</div>
+														</div>";
+												}
+											}
+										  echo "
+								  </div> 
 								  ";
 								  if ($gambar!='') {
 								  echo"
@@ -425,19 +461,38 @@ case "datasurat":
 								
 							<div class='card-body'>
 								
-								<form>
-								  <div class='form-group'>
-									<label for='exampleInputEmail1'>ID Supir</label>
-									<input type='text' name='pembelian' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[id_supir]' readonly>
-								  </div>
-								  <div class='form-group'>
-									<label for='exampleInputEmail1'>Nama</label>
-									<input type='text' name='pembelian' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[nama]' readonly>
-								  </div>
-								  <div class='form-group'>
-									<label for='exampleInputEmail1'>No. Telp</label>
-									<input type='text' name='pembelian' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[no_telp]' readonly>
-								  </div>
+								<form class='repeater' method=POST action='$aksi?module=surat&act=update_detail_surat' enctype='multipart/form-data'>
+									  
+									<input type='hidden' name='current_total_biaya' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[biaya]' readonly>
+									<input type='hidden' name='id_surat' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[id_surat]' readonly>
+							
+									<div class='form-group'>
+										<label for='exampleInputEmail1'>ID Supir</label>
+										<input type='text' name='pembelian' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[id_supir]' readonly>
+									</div>
+									<div class='form-group'>
+										<label for='exampleInputEmail1'>Nama</label>
+										<input type='text' name='pembelian' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[nama]' readonly>
+									</div>
+									<div class='form-group'>
+										<label for='exampleInputEmail1'>No. Telp</label>
+										<input type='text' name='pembelian' class='form-control' id='exampleInputEmail1' aria-describedby='emailHelp' value='$p[no_telp]' readonly>
+									</div>
+								  	<div class='form-group'>
+										<label for='rincianBiaya'>Rincian Biaya Tambahan</label>
+										<div data-repeater-list='rincian_biaya_tambahan'>
+											<div data-repeater-item style='margin-bottom:10px'>
+												<div class='input-group'>
+													<input type='text' name='keterangan' class='form-control' placeholder='Keterangan' required/>
+													<input type='number' min='0' name='biaya' class='form-control' placeholder='Biaya' required/>
+													<input type='file' min='0' name='nota' class='form-control upload-file' placeholder='Upload Nota' value='' accept='.jpg,.png,.jpeg' required/>
+													<a data-repeater-delete type='button' class='btn btn-danger' style='color:white'>Delete</a>
+												</div>
+											</div>
+										</div>
+										<a data-repeater-create type='button' class='btn btn-info' style='color:white'><i class='fa fa-plus'></i> Add</a>
+									</div>
+									<button type='submit' class='btn btn-primary'>Update</button>
 								</form>
 																
 							</div>														
